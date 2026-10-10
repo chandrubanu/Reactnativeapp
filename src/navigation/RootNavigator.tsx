@@ -1,0 +1,44 @@
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { View, ActivityIndicator } from 'react-native';
+import { RootStackParamList } from './types';
+import LoginScreen from '../screens/auth/LoginScreen';
+import MainTabNavigator from './MainTabNavigator';
+import { useAuth } from '../features/auth/useAuth';
+import { colors } from '../constants/theme';
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+/**
+ * RootNavigator reads session state directly from useAuth() and decides
+ * which stack to render — Login vs Main. No manual `navigation.navigate`
+ * calls are needed after login/logout; changing `isAuthenticated` in the
+ * Zustand store causes this component to re-render and React Navigation
+ * swaps the whole stack. Angular comparison: like a route guard
+ * (CanActivate) that redirects based on an observable auth state, except
+ * here the "guard" is just a conditional render.
+ */
+export default function RootNavigator() {
+  const { isAuthenticated, isRestoring } = useAuth();
+
+  if (isRestoring) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator color={colors.primary} size="large" />
+      </View>
+    );
+  }
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {isAuthenticated ? (
+          <Stack.Screen name="Main" component={MainTabNavigator} />
+        ) : (
+          <Stack.Screen name="Login" component={LoginScreen} />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}

@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "FootPro",
+    "slug": "footpro",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "footpro",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "FootPro needs your location to verify you are at an authorized work location before allowing punch in/out.",
+        "NSFaceIDUsageDescription": "FootPro uses Face ID to securely verify your identity for attendance actions."
+      }
+    },
+    "android": {
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "FootPro needs your location to verify your attendance location."
+        }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "FootPro uses Face ID to verify your identity."
+        }
+      ]
+    ]
+  }
+}
