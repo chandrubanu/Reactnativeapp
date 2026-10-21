@@ -20,6 +20,7 @@ const ALLOWED_TRANSITIONS: Record<AttendanceStatus, PunchType[]> = {
   [AttendanceStatus.PUNCHED_OUT]: [],
   [AttendanceStatus.ON_LEAVE]: [],
   [AttendanceStatus.HOLIDAY]: [],
+  [AttendanceStatus.ABSENT]: [],
 };
 
 export function getNextStatus(
@@ -53,7 +54,7 @@ export function getPrimaryActionForStatus(
     case AttendanceStatus.NOT_PUNCHED_IN:
       return { label: 'Punch In', punchType: PunchType.PUNCH_IN };
     case AttendanceStatus.PUNCHED_IN:
-      return { label: 'Punch Out', punchType: PunchType.FINAL_PUNCH_OUT };
+      return { label: 'Punch Out', punchType: PunchType.PUNCH_OUT };
     case AttendanceStatus.ON_BREAK:
       return { label: 'Punch In (End Break)', punchType: PunchType.BREAK_END };
     default:

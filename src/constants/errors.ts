@@ -15,6 +15,7 @@ export enum AppErrorCode {
   BIOMETRIC_FAILED = 'BIOMETRIC_FAILED',
   BIOMETRIC_NOT_AVAILABLE = 'BIOMETRIC_NOT_AVAILABLE',
   SESSION_EXPIRED = 'SESSION_EXPIRED',
+  FORBIDDEN = 'FORBIDDEN', 
   UNKNOWN = 'UNKNOWN',
 }
 
@@ -32,6 +33,8 @@ export const ERROR_MESSAGES: Record<AppErrorCode, string> = {
   [AppErrorCode.BIOMETRIC_FAILED]: 'Biometric verification failed. Please try again.',
   [AppErrorCode.BIOMETRIC_NOT_AVAILABLE]: 'Biometric authentication is not available on this device.',
   [AppErrorCode.SESSION_EXPIRED]: 'Your session has expired. Please log in again.',
+    [AppErrorCode.FORBIDDEN]: 'You do not have permission to access this area.',
+
   [AppErrorCode.UNKNOWN]: 'Something went wrong. Please try again.',
 };
 

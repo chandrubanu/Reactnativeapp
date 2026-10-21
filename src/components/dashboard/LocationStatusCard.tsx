@@ -45,12 +45,25 @@ export function LocationStatusCard({ isChecking, result, errorMessage }: Locatio
     );
   }
 
+  if (result.centerId && result.isAccuracyAcceptable === false) {
+    return (
+      <View style={[styles.container, styles.warn]}>
+        <Text style={styles.warnText}>GPS accuracy is too low to confirm your location.</Text>
+        <Text style={styles.meta}>
+          {result.centerName} · {formatDistance(result.distanceMeters)}m away · GPS accuracy{' '}
+          {formatDistance(result.accuracyMeters)}m (maximum {result.accuracyThresholdMeters}m).
+          Move to an open area and check again.
+        </Text>
+      </View>
+    );
+  }
+
   if (result.isInside) {
     return (
       <View style={[styles.container, styles.ok]}>
         <Text style={styles.okText}>You are within the office location.</Text>
         <Text style={styles.meta}>
-          {result.centerName} · {result.distanceMeters}m away
+          {result.centerName} · {formatDistance(result.distanceMeters)}m away
         </Text>
       </View>
     );
@@ -61,7 +74,7 @@ export function LocationStatusCard({ isChecking, result, errorMessage }: Locatio
       <Text style={styles.warnText}>You are outside office radius.</Text>
       {result.centerName ? (
         <Text style={styles.meta}>
-          Nearest: {result.centerName} · {result.distanceMeters}m away (limit{' '}
+          Nearest: {result.centerName} · {formatDistance(result.distanceMeters)}m away (limit{' '}
           {result.allowedRadiusMeters}m)
         </Text>
       ) : null}
@@ -69,8 +82,14 @@ export function LocationStatusCard({ isChecking, result, errorMessage }: Locatio
   );
 }
 
+function formatDistance(distanceMeters: number | null): string {
+  if (distanceMeters === null) return 'unknown';
+  if (distanceMeters < 1) return '<1';
+  return String(Math.round(distanceMeters));
+}
+
 const styles = StyleSheet.create({
-  container: { paddingVertical: spacing.xs },
+  container: { paddingVertical: spacing.xs, textTransform: 'capitalize' },
   checking: { ...typography.body, color: colors.textSecondary },
   ok: {},
   okText: { ...typography.bodyBold, color: colors.success },

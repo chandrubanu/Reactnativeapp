@@ -1,29 +1,36 @@
+import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
-// Thin wrapper around expo-secure-store. Why a wrapper instead of calling
-// SecureStore directly everywhere? Single choke point if we ever need to
-// change storage strategy, add key prefixing, or add error handling —
-// same reasoning as wrapping Angular's localStorage in an injectable
-// StorageService instead of calling window.localStorage directly.
+// expo-secure-store has NO web implementation (browsers have no Keychain /
+// Keystore). On web we fall back to localStorage so the admin console can
+// keep a session. localStorage is readable by any script on the page, so a
+// real backend should use short-lived tokens or httpOnly cookies for web.
+const isWeb = Platform.OS === 'web';
+const webStore = () => (globalThis as any).localStorage as Storage;
 
 const SESSION_TOKEN_KEY = 'footpro.session.token';
 const SESSION_EMPLOYEE_ID_KEY = 'footpro.session.employeeId';
 
+async function setItem(key: string, value: string) {
+  if (isWeb) return webStore().setItem(key, value);
+  await SecureStore.setItemAsync(key, value);
+}
+async function getItem(key: string): Promise<string | null> {
+  if (isWeb) return webStore().getItem(key);
+  return SecureStore.getItemAsync(key);
+}
+async function removeItem(key: string) {
+  if (isWeb) return webStore().removeItem(key);
+  await SecureStore.deleteItemAsync(key);
+}
+
 export const secureStorage = {
-  async saveToken(token: string): Promise<void> {
-    await SecureStore.setItemAsync(SESSION_TOKEN_KEY, token);
-  },
-  async getToken(): Promise<string | null> {
-    return SecureStore.getItemAsync(SESSION_TOKEN_KEY);
-  },
-  async saveEmployeeId(id: string): Promise<void> {
-    await SecureStore.setItemAsync(SESSION_EMPLOYEE_ID_KEY, id);
-  },
-  async getEmployeeId(): Promise<string | null> {
-    return SecureStore.getItemAsync(SESSION_EMPLOYEE_ID_KEY);
-  },
-  async clear(): Promise<void> {
-    await SecureStore.deleteItemAsync(SESSION_TOKEN_KEY);
-    await SecureStore.deleteItemAsync(SESSION_EMPLOYEE_ID_KEY);
+  saveToken: (token: string) => setItem(SESSION_TOKEN_KEY, token),
+  getToken: () => getItem(SESSION_TOKEN_KEY),
+  saveEmployeeId: (id: string) => setItem(SESSION_EMPLOYEE_ID_KEY, id),
+  getEmployeeId: () => getItem(SESSION_EMPLOYEE_ID_KEY),
+  async clear() {
+    await removeItem(SESSION_TOKEN_KEY);
+    await removeItem(SESSION_EMPLOYEE_ID_KEY);
   },
 };

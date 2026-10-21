@@ -1,4 +1,5 @@
 import React from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import { PrimaryButton } from '../common/PrimaryButton';
 
 interface AttendanceActionButtonProps {
@@ -6,6 +7,17 @@ interface AttendanceActionButtonProps {
   enabled: boolean;
   loading: boolean;
   onPress: () => void;
+  className?: string;
+}
+
+/** Maps each button label to a matching Ionicon */
+function getIconForLabel(label: string): React.ComponentProps<typeof Ionicons>['name'] {
+  const lower = label.toLowerCase();
+  if (lower.includes('punch in') && lower.includes('break')) return 'cafe-outline';   // end break → back to work
+  if (lower.includes('punch in')) return 'finger-print';                              // first punch in
+  if (lower.includes('punch out')) return 'log-out-outline';                           // punch out
+  if (lower.includes('break')) return 'cafe-outline';                              // break start
+  return 'finger-print';                                                                // fallback
 }
 
 /**
@@ -21,6 +33,16 @@ export function AttendanceActionButton({
   enabled,
   loading,
   onPress,
+  className,
 }: AttendanceActionButtonProps) {
-  return <PrimaryButton label={label} disabled={!enabled} loading={loading} onPress={onPress} />;
+  return (
+    <PrimaryButton
+      label={label}
+      disabled={!enabled}
+      loading={loading}
+      onPress={onPress}
+      icon={getIconForLabel(label)}
+      className={className}
+    />
+  );
 }

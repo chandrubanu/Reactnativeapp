@@ -1,12 +1,14 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, Platform } from 'react-native';
 import { RootStackParamList } from './types';
 import LoginScreen from '../screens/auth/LoginScreen';
 import MainTabNavigator from './MainTabNavigator';
 import { useAuth } from '../features/auth/useAuth';
 import { colors } from '../constants/theme';
+import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen';
+import { isSuperAdmin } from '../utils/roles';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -20,7 +22,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
  * here the "guard" is just a conditional render.
  */
 export default function RootNavigator() {
-  const { isAuthenticated, isRestoring } = useAuth();
+  const { isAuthenticated, isRestoring, employee } = useAuth();
 
   if (isRestoring) {
     return (
@@ -29,14 +31,16 @@ export default function RootNavigator() {
       </View>
     );
   }
-
+const showAdminConsole = Platform.OS === 'web' && isSuperAdmin(employee);
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {isAuthenticated ? (
-          <Stack.Screen name="Main" component={MainTabNavigator} />
-        ) : (
+        {!isAuthenticated ? (
           <Stack.Screen name="Login" component={LoginScreen} />
+        ) : showAdminConsole ? (
+          <Stack.Screen name="AdminDashboard" component={AdminDashboardScreen} />
+        ) : (
+          <Stack.Screen name="Main" component={MainTabNavigator} />
         )}
       </Stack.Navigator>
     </NavigationContainer>

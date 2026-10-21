@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Card } from '../common/Card';
 import { colors, radii, spacing, typography } from '../../constants/theme';
 
 interface CurrentShiftCardProps {
@@ -10,11 +9,11 @@ interface CurrentShiftCardProps {
   isActive: boolean;
 }
 
-export function CurrentShiftCard({ startTime, endTime, isActive }: CurrentShiftCardProps) {
+export function CurrentShiftCard({ shiftLabel, startTime, endTime, isActive }: CurrentShiftCardProps) {
   return (
-    <Card style={styles.card}>
+    <View>
       <View style={styles.headerRow}>
-        <Text style={styles.title}>Current Shift</Text>
+        <Text style={styles.title}>{shiftLabel}</Text>
         <View style={[styles.badge, isActive ? styles.badgeActive : styles.badgeInactive]}>
           <Text style={styles.badgeText}>{isActive ? 'ACTIVE' : 'INACTIVE'}</Text>
         </View>
@@ -22,12 +21,11 @@ export function CurrentShiftCard({ startTime, endTime, isActive }: CurrentShiftC
       <Text style={styles.timeRange}>
         {startTime} - {endTime}
       </Text>
-    </Card>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: colors.primaryLight },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   title: { ...typography.body, color: colors.textSecondary },
   timeRange: { ...typography.h1, color: colors.primaryDark, marginTop: spacing.xs },

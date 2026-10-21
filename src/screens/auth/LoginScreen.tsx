@@ -46,7 +46,7 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.flex}
+      style={Platform.OS === 'web' ? styles.flex1 : styles.flex}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <View style={styles.container}>
@@ -96,13 +96,15 @@ export default function LoginScreen() {
           style={styles.button}
         />
 
-        <Text style={styles.hint}>Demo: EMP1001 / password123</Text>
+        <Text style={styles.hint}>Demo: EMP1001 / 123</Text>
+        <Text style={styles.hint}>Demo super admin (web): EMP1002 / 123</Text>
       </View>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
+  flex1: { width: 400, margin: 'auto', backgroundColor: colors.background },
   flex: { flex: 1, backgroundColor: colors.background },
   container: { flex: 1, justifyContent: 'center', padding: spacing.lg },
   brand: { ...typography.h1, color: colors.primary, textAlign: 'center' },

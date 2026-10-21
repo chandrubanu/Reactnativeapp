@@ -34,6 +34,10 @@
           "faceIDPermission": "FootPro uses Face ID to verify your identity."
         }
       ]
-    ]
+    ],
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    }
   }
 }

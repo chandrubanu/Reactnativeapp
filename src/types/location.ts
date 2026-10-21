@@ -14,6 +14,8 @@ export interface OfficeLocation {
 
 export interface LocationValidationResult {
   isInside: boolean;
+  isAccuracyAcceptable: boolean | null;
+  accuracyThresholdMeters: number | null;
   centerId: string | null;
   centerName: string | null;
   distanceMeters: number | null;

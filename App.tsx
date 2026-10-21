@@ -4,7 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import RootNavigator from './src/navigation/RootNavigator';
 import { queryClient } from './src/api/queryClient';
-
+import "./global.css"
 /**
  * App.tsx is the composition root: every top-level Provider (React
  * Navigation's safe-area context, TanStack Query's cache provider) wraps

@@ -1,6 +1,6 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Pressable, Text, StyleSheet, ActivityIndicator, ViewStyle } from 'react-native';
-import { colors, radii, spacing, typography } from '../../constants/theme';
+import { Pressable, Text, ActivityIndicator, View, ViewStyle } from 'react-native';
 
 interface PrimaryButtonProps {
   label: string;
@@ -8,52 +8,35 @@ interface PrimaryButtonProps {
   disabled?: boolean;
   loading?: boolean;
   style?: ViewStyle;
+  className?: string;
+  icon?: React.ComponentProps<typeof Ionicons>['name'];
 }
 
 /**
  * `Pressable` is RN's modern touch-handling primitive (successor to
- * `TouchableOpacity`). Angular comparison: like a `<button>` but you
- * control the pressed/disabled visual states yourself via style functions
- * — there's no browser default button styling to override.
+ * `TouchableOpacity`). Styled with NativeWind (Tailwind) className strings.
  */
-export function PrimaryButton({ label, onPress, disabled, loading, style }: PrimaryButtonProps) {
+export function PrimaryButton({ label, onPress, disabled, loading, style, className: extraClassName, icon }: PrimaryButtonProps) {
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled || loading}
-      style={({ pressed }) => [
-        styles.button,
-        disabled ? styles.buttonDisabled : null,
-        pressed && !disabled ? styles.buttonPressed : null,
-        style,
-      ]}
+      style={style}
+      className={[
+        'rounded-3xl py-4 items-center justify-center',
+        disabled || loading ? 'bg-primaryDisabled' : 'bg-primary active:bg-primaryDark',
+        extraClassName ?? '',
+      ].join(' ')}
     >
       {loading ? (
-        <ActivityIndicator color={colors.surface} />
+        <ActivityIndicator color="#FFFFFF" />
       ) : (
-        <Text style={styles.label}>{label}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          {icon && <Ionicons name={icon} size={22} color="#FFFFFF" />}
+          <Text className="text-white text-[17px] font-semibold">{label}</Text>
+        </View>
       )}
     </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
-  button: {
-    backgroundColor: colors.primary,
-    borderRadius: radii.lg,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonPressed: {
-    backgroundColor: colors.primaryDark,
-  },
-  buttonDisabled: {
-    backgroundColor: '#A9B6D6',
-  },
-  label: {
-    color: colors.surface,
-    ...typography.bodyBold,
-    fontSize: 17,
-  },
-});

@@ -1,12 +1,13 @@
 import { useCallback, useState } from 'react';
 import { locationService } from '../../services/locationService';
 import { locationRepository } from './locationRepository';
-import { LocationValidationResult } from '../../types/location';
+import { DeviceLocationSample, LocationValidationResult } from '../../types/location';
 import { AppError, AppErrorCode, ERROR_MESSAGES } from '../../constants/errors';
 
 interface UseLocationValidationState {
   isChecking: boolean;
   result: LocationValidationResult | null;
+  sample: DeviceLocationSample | null;
   errorMessage: string | null;
 }
 
@@ -21,11 +22,12 @@ export function useLocationValidation(employeeId: string) {
   const [state, setState] = useState<UseLocationValidationState>({
     isChecking: false,
     result: null,
+    sample: null,
     errorMessage: null,
   });
 
   const checkLocation = useCallback(async () => {
-    setState({ isChecking: true, result: null, errorMessage: null });
+    setState({ isChecking: true, result: null, sample: null, errorMessage: null });
     try {
       const [sample, authorizedLocations] = await Promise.all([
         locationService.getCurrentSample(),
@@ -33,13 +35,15 @@ export function useLocationValidation(employeeId: string) {
       ]);
 
       const result = locationService.validateAgainstLocations(sample, authorizedLocations);
-      console.log(result, 'validateAgainstLocations')
-      setState({ isChecking: false, result, errorMessage: null });
+      console.log('validateAgainstLocations', result)
+      console.log('Location current', sample)
+      setState({ isChecking: false, result, sample, errorMessage: null });
     } catch (err) {
       const code = err instanceof AppError ? err.code : AppErrorCode.UNKNOWN;
       setState({
         isChecking: false,
         result: null,
+        sample: null,
         errorMessage: ERROR_MESSAGES[code],
       });
     }

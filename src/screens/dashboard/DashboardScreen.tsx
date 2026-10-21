@@ -15,6 +15,7 @@ import { WeeklyOverview } from '../../components/dashboard/WeeklyOverview';
 import { PerformanceCard } from '../../components/dashboard/PerformanceCard';
 import { colors, spacing } from '../../constants/theme';
 import { AppError, AppErrorCode, ERROR_MESSAGES } from '../../constants/errors';
+import { Card } from '@/components/common/Card';
 
 /**
  * DashboardScreen is intentionally "thin": it wires hooks together and
@@ -30,7 +31,7 @@ export default function DashboardScreen() {
   const { data: summary, isLoading: loadingSummary, refetch: refetchSummary } =
     useDashboardSummary(employeeId);
   const { data: attendance, refetch: refetchAttendance } = useTodayAttendance(employeeId);
-  const { checkLocation, isChecking, result: locationResult, errorMessage: locationError } =
+  const { checkLocation, isChecking, result: locationResult, sample: locationSample, errorMessage: locationError } =
     useLocationValidation(employeeId ?? '');
   const submitPunch = useSubmitPunch();
 
@@ -43,6 +44,7 @@ export default function DashboardScreen() {
     if (employeeId) checkLocation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [employeeId]);
+
 
   const currentStatus = attendance?.status;
   const primaryAction = currentStatus ? getPrimaryActionForStatus(currentStatus) : null;
@@ -60,7 +62,6 @@ export default function DashboardScreen() {
   );
 
   const canPunch = Boolean(primaryAction) && Boolean(locationResult?.isInside) && !submitPunch.isPending;
-
   const handlePunch = async () => {
     setActionError(null);
     if (!employee || !primaryAction || !locationResult || !locationResult.isInside) return;
@@ -83,8 +84,8 @@ export default function DashboardScreen() {
         punchType: primaryAction.punchType,
         timestampIso: new Date().toISOString(),
         coordinates: {
-          latitude: 0, // in a full build these come from the last GPS sample;
-          longitude: 0, // kept simple here since locationResult only exposes distance
+          latitude: locationSample?.coords.latitude ?? 0,
+          longitude: locationSample?.coords.longitude ?? 0,
         },
         accuracyMeters: locationResult.accuracyMeters ?? 0,
         centerId: locationResult.centerId ?? '',
@@ -120,31 +121,32 @@ export default function DashboardScreen() {
       refreshControl={<RefreshControl refreshing={false} onRefresh={handleRefresh} />}
     >
       <DashboardHeader employeeName={employee.name} dateLabel={dateLabel} />
-
-      <CurrentShiftCard
-        shiftLabel={summary.currentShiftLabel}
-        startTime={summary.shiftStart}
-        endTime={summary.shiftEnd}
-        isActive={currentStatus === 'PUNCHED_IN' || currentStatus === 'ON_BREAK'}
-      />
-
-      <LocationStatusCard isChecking={isChecking} result={locationResult} errorMessage={locationError} />
-
-      {actionError ? <Text style={styles.actionError}>{actionError}</Text> : null}
-
-      {primaryAction ? (
-        <AttendanceActionButton
-          label={primaryAction.label}
-          enabled={canPunch}
-          loading={submitPunch.isPending}
-          onPress={handlePunch}
+      <Card style={styles.card} >
+        <CurrentShiftCard
+          shiftLabel={summary.currentShiftLabel}
+          startTime={summary.shiftStart}
+          endTime={summary.shiftEnd}
+          isActive={currentStatus === 'PUNCHED_IN' || currentStatus === 'ON_BREAK'}
         />
-      ) : (
-        <Text style={styles.doneText}>No further action available today.</Text>
-      )}
 
+        <LocationStatusCard isChecking={isChecking} result={locationResult} errorMessage={locationError} />
+
+        {/* {actionError ? <Text style={styles.actionError}>{actionError}</Text> : null} */}
+
+        {primaryAction ? (
+          <AttendanceActionButton
+            className={"mt-5"}
+            label={primaryAction.label}
+            enabled={canPunch}
+            loading={submitPunch.isPending}
+            onPress={handlePunch}
+          />
+        ) : (
+          <Text style={styles.doneText}>No further action available today.</Text>
+        )}
+      </Card>
       <View style={styles.row}>
-        <PunctualityCard percentage={summary.punctuality.percentage} />
+        {<PunctualityCard percentage={summary.punctuality.percentage} />}
         <View style={styles.weeklyWrap}>
           <WeeklyOverview days={summary.weeklyOverview} />
         </View>
@@ -161,6 +163,7 @@ export default function DashboardScreen() {
 }
 
 const styles = StyleSheet.create({
+  card: { backgroundColor: colors.primaryLight },
   screen: { flex: 1, backgroundColor: colors.background },
   content: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing.xl * 2 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },

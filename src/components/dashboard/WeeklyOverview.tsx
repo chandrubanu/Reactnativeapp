@@ -30,7 +30,7 @@ export function WeeklyOverview({ days }: WeeklyOverviewProps) {
                   ]}
                 />
               </View>
-              <Text style={styles.dayLabel}>{day.dayLabel}</Text>
+              <Text style={styles.dayLabel}>{day.dayLabel.slice(-2)}</Text>
             </View>
           );
         })}

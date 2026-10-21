@@ -67,6 +67,8 @@ describe('locationService.validateAgainstLocations — geofence boundary', () =>
     // distance 30m (within 50m radius) but accuracy 100m > 30m threshold
     const result = locationService.validateAgainstLocations(sampleAt(30, 100), [BASE_LOCATION]);
     expect(result.isInside).toBe(false);
+    expect(result.isAccuracyAcceptable).toBe(false);
+    expect(result.accuracyThresholdMeters).toBe(BASE_LOCATION.gpsAccuracyThresholdMeters);
   });
 
   it('respects a configurable (non-50m) radius, e.g. 100m for CHN-style center', () => {

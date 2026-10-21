@@ -38,10 +38,10 @@ export const MOCK_OFFICE_LOCATIONS: OfficeLocation[] = [
     centerId: 'VLR001',
     centerCode: 'VLR',
     centerName: 'villiyanur Fulfillment Center',
-    latitude: 11.907718,
-    longitude: 79.7587363,
-    geofenceRadiusMeters: 200,
-    gpsAccuracyThresholdMeters: 200,
+    latitude: 11.9048364,
+    longitude: 79.6256692,
+    geofenceRadiusMeters: 100,
+    gpsAccuracyThresholdMeters: 70,
     timezone: 'Asia/Kolkata',
     isActive: true,
   },
@@ -50,6 +50,6 @@ export const MOCK_OFFICE_LOCATIONS: OfficeLocation[] = [
 // Mock: which centers the currently logged-in employee is assigned to.
 // A real backend would return this as part of the employee profile.
 export const MOCK_EMPLOYEE_CENTER_ASSIGNMENTS: Record<string, string[]> = {
-  'EMP-1001': ['VLR001'],
-  'EMP-1002': ['VLR001'],
+  '3': ['VLR001'],
+  '1': ['VLR001'],
 };

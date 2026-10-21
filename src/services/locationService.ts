@@ -70,6 +70,8 @@ function validateAgainstLocations(
   if (sample.isMockLocation) {
     return {
       isInside: false,
+      isAccuracyAcceptable: null,
+      accuracyThresholdMeters: null,
       centerId: null,
       centerName: null,
       distanceMeters: null,
@@ -78,12 +80,13 @@ function validateAgainstLocations(
       isMockLocation: true,
     };
   }
-
   const activeLocations = authorizedLocations.filter((l) => l.isActive);
 
   if (activeLocations.length === 0) {
     return {
       isInside: false,
+      isAccuracyAcceptable: null,
+      accuracyThresholdMeters: null,
       centerId: null,
       centerName: null,
       distanceMeters: null,
@@ -114,6 +117,8 @@ function validateAgainstLocations(
 
   return {
     isInside: accuracyOk && withinRadius,
+    isAccuracyAcceptable: accuracyOk,
+    accuracyThresholdMeters: nearest.loc.gpsAccuracyThresholdMeters,
     centerId: nearest.loc.centerId,
     centerName: nearest.loc.centerName,
     distanceMeters: nearest.distance,

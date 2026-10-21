@@ -5,6 +5,7 @@ export enum AttendanceStatus {
   PUNCHED_OUT = 'PUNCHED_OUT',
   ON_LEAVE = 'ON_LEAVE',
   HOLIDAY = 'HOLIDAY',
+  ABSENT = 'ABSENT'
 }
 
 export enum PunchType {
