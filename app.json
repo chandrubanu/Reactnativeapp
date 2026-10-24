@@ -6,6 +6,9 @@
     "orientation": "portrait",
     "scheme": "footpro",
     "userInterfaceStyle": "light",
+     "experiments": {
+      "baseUrl": "/attendance-app"
+    },
     "ios": {
       "supportsTablet": false,
       "infoPlist": {
