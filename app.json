@@ -7,7 +7,7 @@
     "scheme": "footpro",
     "userInterfaceStyle": "light",
      "experiments": {
-      "baseUrl": "/attendance-app"
+      "baseUrl": "/Reactnativeapp"
     },
     "ios": {
       "supportsTablet": false,
