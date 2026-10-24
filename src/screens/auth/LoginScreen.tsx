@@ -94,10 +94,7 @@ export default function LoginScreen() {
           loading={submitting}
           onPress={handleSubmit(onSubmit)}
           style={styles.button}
-        />
-
-        <Text style={styles.hint}>Demo: EMP1001 / 123</Text>
-        <Text style={styles.hint}>Demo super admin (web): EMP1002 / 123</Text>
+        /> 
       </View>
     </KeyboardAvoidingView>
   );
