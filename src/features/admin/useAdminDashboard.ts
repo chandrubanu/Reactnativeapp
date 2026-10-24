@@ -12,6 +12,15 @@ export function useCenterSettings() {
     enabled: isSuperAdmin(employee), // never even fire the request for non-admins
   });
 }
+export function getDashboardCount(dateLabel:string) {
+  const employee = useSessionStore((s) => s.employee);
+  return useQuery({
+    queryKey: ['getDashboardCount'],
+    queryFn: () => AdminDashboardRepository.getDashboardCount(dateLabel),
+    enabled: isSuperAdmin(employee), // never even fire the request for non-admins
+  });
+}
+
 
 export function useSaveCenterSettings() {
   const employee = useSessionStore((s) => s.employee);

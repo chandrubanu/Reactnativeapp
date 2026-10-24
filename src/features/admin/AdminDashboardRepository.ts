@@ -1,10 +1,12 @@
-import { CenterSettings, RecentActivities } from '../../types/admin';
+import { CenterSettings, RecentActivities,AdminDashboardCards,DashboardResponse } from '../../types/admin';
 import { ShiftTemplate } from '../../types/shift';
 import { Employee } from '../../types/employee';
 import { AppError, AppErrorCode } from '../../constants/errors';
 import { isSuperAdmin } from '../../utils/roles';
+import { authFetch } from '@/api/apiClient';
 
-export interface IAdminDashboardRepository {
+export interface IAdminDashboardRepository { 
+  getDashboardCount(dateLabel:string): Promise<DashboardResponse>;
   getCenterSettings(actor: Employee): Promise<CenterSettings[]>;
   saveCenterSettings(actor: Employee, centers: CenterSettings[]): Promise<CenterSettings[]>;
   saveShiftTemplates(actor: Employee, shifts: ShiftTemplate[]): Promise<ShiftTemplate[]>;
@@ -130,26 +132,44 @@ class MockAdminDashboardRepository implements IAdminDashboardRepository {
 
   //new values
  
-  async getAllRecentActivities(): Promise<RecentActivities[]> {
-  const response = await fetch(
-    'https://jsonplaceholder.typicode.com/users'
-  ); 
-  if (!response.ok) {
+  async getAllRecentActivities(): Promise<RecentActivities[]> {  
+  const response: any = await authFetch<RecentActivities>('/api/admin/activity?officeId=1&date=2026-10-24&page=0&size=10');
+  if (!response || !Array.isArray(response.items)) {
     throw new Error('Failed to fetch recent activities');
   } 
-  const users = await response.json(); 
+  const users = response.items; 
+  
   return users.map((user: any) => ({
-    id: String(user.id),
-    name: user.name,
+    id: String(user.employeeId),
+    name: user.employeeName,
     avatar: '👨🏻‍💼',
-    status: user.id % 3 === 0
-      ? 'Late'
-      : user.id % 2 === 0
-        ? 'With Permission'
-        : 'On Time',
-    punchIn: '09:00 AM',
-    department: user.company.name,
+    status: user.status  ,
+    punchIn: user.punchInTime?new Date(user.punchInTime)
+  .toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).replace(/\//g, '-'):'- - -',
+    department: user.department,
   }));
+}
+//   async getDashboardCount(dateLabel:string): Promise<AdminDashboardCards> {  
+//   const response: any = await authFetch<RecentActivities>(`/api/admin/dashboard?officeId=1&date=${dateLabel}&page=0&size=20`);
+//   if (!response || !Array.isArray(response.items)) {
+//     throw new Error('Failed to fetch recent activities');
+//   } 
+//   return response; 
+// }
+async getDashboardCount(dateLabel: string): Promise<DashboardResponse> {
+  const response = await authFetch<DashboardResponse>(
+    `/api/admin/dashboard?officeId=1&date=${encodeURIComponent(dateLabel)}&page=0&size=20`,
+  );
+
+ if (!response?.overview) {
+    throw new Error('Invalid dashboard response');
+  } 
+  return response;
 }
 }
 

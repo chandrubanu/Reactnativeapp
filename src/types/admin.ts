@@ -47,5 +47,29 @@ export interface RecentActivities {
     department: string,
     avatar: '👨🏻‍💼',
 }
+
 export interface AdminDashboardCards{
   title: string, count: number,  icon: keyof typeof Octicons.glyphMap; percentage: string ,color:keyof typeof colors}
+
+  export interface DashboardAttendanceItem {
+  status?: string;
+}
+ export interface DashboardResponse {
+   overview: DashboardOverview;
+  recentActivity: {
+    items: DashboardAttendanceItem[];
+  };
+}
+export interface DashboardOverview {
+  totalEmployees: number;
+  punchedIn: number;
+  currentlyPunchedIn: number;
+  latePunches: number;
+  absences: number;
+  withPermission: number;
+  onLeave: number;
+  holidays: number;
+  notStarted: number;
+  punchedInChangePercent: number;
+  latePunchesChangePercent: number | null;
+}

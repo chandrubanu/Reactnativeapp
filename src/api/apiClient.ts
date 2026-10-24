@@ -13,13 +13,13 @@ import { AppError, AppErrorCode } from '../constants/errors';
  */
 const PHYSICAL_DEVICE_IP = '10.216.137.85';
 
-export const BASE_URL =
-  Platform.OS === 'web'
-    ? 'http://localhost:8080/attendance'
-    : Platform.OS === 'android'
-      ? `http://${PHYSICAL_DEVICE_IP}:8080/attendance`   // physical device
-      : `http://${PHYSICAL_DEVICE_IP}:8080/attendance`;  // iOS physical device
-//export const BASE_URL = 'https://35.255.94.143/attendance'
+// export const BASE_URL =
+//   Platform.OS === 'web'
+//     ? 'http://localhost:8080/attendance'
+//     : Platform.OS === 'android'
+//       ? `http://${PHYSICAL_DEVICE_IP}:8080/attendance`   // physical device
+//       : `http://${PHYSICAL_DEVICE_IP}:8080/attendance`;  // iOS physical device
+export const BASE_URL = 'http://35.255.94.143:8006/attendance'
 
 /**
  * Authenticated fetch wrapper.

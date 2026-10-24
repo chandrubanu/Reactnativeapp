@@ -11,9 +11,9 @@ const NAV: Array<{ label: string; icon: string; enabled: boolean }> = [
   { label: 'Dashboard', icon: 'grid-outline', enabled: true },
   { label: 'Scheduling', icon: 'calendar-outline', enabled: false },
   { label: 'Leave Approval', icon: 'checkbox-outline', enabled: false },
-  { label: 'Reports', icon: 'bar-chart-outline', enabled: false },
-  { label: 'Employee Management', icon: 'people-outline', enabled: false },
-  { label: 'Settings', icon: 'settings-outline', enabled: false },
+  // { label: 'Reports', icon: 'bar-chart-outline', enabled: false },
+  // { label: 'Employee Management', icon: 'people-outline', enabled: false },
+  // { label: 'Settings', icon: 'settings-outline', enabled: false },
 ];
 
 interface AdminShellProps {

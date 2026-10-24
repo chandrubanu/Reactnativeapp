@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
 import { useAuth } from '../../features/auth/useAuth';
-import { useCenterSettings, useSaveCenterSettings } from '../../features/admin/useAdminDashboard';
+import { useCenterSettings,getDashboardCount, useSaveCenterSettings } from '../../features/admin/useAdminDashboard';
 import { isSuperAdmin } from '../../utils/roles';
 import { AdminShell } from '../../components/admin/AdminShell';  
 import { admin } from '../../components/admin/adminTheme';
@@ -27,7 +27,12 @@ export default function AdminDashboardScreen() {
 }
 
 function DashboardContent() {
-  const query = useCenterSettings();  
+       const todayDate =  useMemo(
+  () => new Date().toISOString().split('T')[0],
+  [],
+); 
+ const { data: query, isLoading, isError } = getDashboardCount(todayDate);
+const overview = query?.overview; 
    const { employee } = useAuth();
      const dateLabel = useMemo(
        () =>
@@ -40,12 +45,39 @@ function DashboardContent() {
            }) ,
        [],
      ); 
-  const carddetails: AdminDashboardCards[] = [
-    { title: 'Punched In', count: 35, icon: 'person-add', percentage: "12" ,color:'primary' },
-    { title: 'Late Punches', count: 35, icon: 'clock', percentage: "12",color:'textBrown' },
-    { title: 'Absentees', count: 35, icon: 'x-circle', percentage: "12",color:'danger' },
-    { title: 'With Permission', count: 35, icon: 'check-circle', percentage: "12",color:'success' },
-  ]; 
+
+   console.log("query",query)
+
+const carddetails: AdminDashboardCards[] = [
+  {
+    title: 'Punched In',
+    count: overview?.punchedIn ?? 0,
+    icon: 'person-add',
+    percentage: String(overview?.punchedInChangePercent ?? 0),
+    color: 'primary',
+  },
+  {
+    title: 'Late Punches',
+    count: overview?.latePunches ?? 0,
+    icon: 'clock',
+    percentage: String(overview?.latePunchesChangePercent ?? 0),
+    color: 'textBrown',
+  },
+  {
+    title: 'Absentees',
+    count: overview?.absences ?? 0,
+    icon: 'x-circle',
+    percentage: '—',
+    color: 'danger',
+  },
+  {
+    title: 'With Permission',
+    count: overview?.withPermission ?? 0,
+    icon: 'check-circle',
+    percentage: '—',
+    color: 'success',
+  },
+];
 
   return (
     <AdminShell activeItem="Dashboard" pageTitle="Dashboard">
@@ -77,8 +109,8 @@ function DashboardContent() {
   ))}
   </View>
   <AdminRecentActivities/>
-      {query.isLoading ? <ActivityIndicator color={colors.primary} style={{ marginTop: spacing.xl }} /> : null}
-      {query.isError ? <Text style={styles.message}>{ERROR_MESSAGES[AppErrorCode.SERVER_ERROR]}</Text> : null}
+      {isLoading ? <ActivityIndicator color={colors.primary} style={{ marginTop: spacing.xl }} /> : null}
+      {isError ? <Text style={styles.message}>{ERROR_MESSAGES[AppErrorCode.SERVER_ERROR]}</Text> : null}
 
     </AdminShell>
   );
@@ -89,7 +121,7 @@ const styles = StyleSheet.create({
   deniedText: { ...typography.bodyBold, color: colors.danger },
   headerRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.lg ,marginBottom: spacing.md, marginTop: spacing.md ,width: '100%',  },
   h1: { ...typography.bodyBold, color: colors.textPrimary },
-  desc: { ...typography.body, textTransform:'capitalize', fontSize: 13, color: colors.textSecondary, marginTop: 6, maxWidth: 480 },
+  desc: { ...typography.body, textTransform:'capitalize', fontSize: 13, color: colors.textSecondary, marginTop: 6  },
   saveBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.primary,
     paddingHorizontal: spacing.lg, paddingVertical: spacing.sm + 4, borderRadius: radii.sm, minWidth: 148, justifyContent: 'center',

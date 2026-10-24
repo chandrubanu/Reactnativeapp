@@ -4,5 +4,5 @@ import { Employee } from '../types/employee';
 // protection must be the backend rejecting admin API calls from
 // non-super-admin tokens (the mock repository simulates that).
 export function isSuperAdmin(employee: Employee | null | undefined): boolean {
-  return employee?.role === 'SUPER_ADMIN';
+  return employee?.role === 'ADMIN';
 }

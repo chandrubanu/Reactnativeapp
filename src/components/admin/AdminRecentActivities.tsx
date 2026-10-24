@@ -65,15 +65,15 @@ export default function AdminRecentActivities() {
 
         {employees.map((employee) => {
           const statusStyle =
-            employee.status === 'Late'
+            employee.status === 'ABSENT'
               ? styles.late
-              : employee.status === 'On Time'
+              : employee.status === 'ON_TIME'
                 ? styles.onTime
                 : styles.permission;
                 const statusStyletransparent =
-            employee.status === 'Late'
+            employee.status === 'ABSENT'
               ? styles.latetransparent
-              : employee.status === 'On Time'
+              : employee.status === 'ON_TIME'
                 ? styles.onTimetransparent
                 : styles.permissiontransparent;
 
@@ -261,7 +261,8 @@ employeeDetails: {
 
   badgeText: {
     fontSize: 10, 
-    fontWeight:500
+    fontWeight:500,
+    textTransform:'capitalize'
   },
 
   onTime: {

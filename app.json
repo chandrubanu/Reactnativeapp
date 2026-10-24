@@ -18,8 +18,13 @@
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
         "USE_BIOMETRIC",
-        "USE_FINGERPRINT"
-      ]
+        "USE_FINGERPRINT",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT"
+      ],
+      "package": "com.banuchandar93.footpro"
     },
     "plugins": [
       [
@@ -38,6 +43,11 @@
     "web": {
       "bundler": "metro",
       "output": "single"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "03506b56-9572-4632-a36e-e40959e15855"
+      }
     }
   }
 }
