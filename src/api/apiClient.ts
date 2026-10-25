@@ -19,7 +19,7 @@ const PHYSICAL_DEVICE_IP = '10.216.137.85';
 //     : Platform.OS === 'android'
 //       ? `http://${PHYSICAL_DEVICE_IP}:8080/attendance`   // physical device
 //       : `http://${PHYSICAL_DEVICE_IP}:8080/attendance`;  // iOS physical device
-export const BASE_URL = 'https://35.255.94.143:8006/attendance'
+export const BASE_URL = 'http://app.footpro.in/attendance'
 
 /**
  * Authenticated fetch wrapper.
