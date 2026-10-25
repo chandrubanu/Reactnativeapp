@@ -1,0 +1,65 @@
+
+# Dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Production builds
+build/
+
+# Environment variables and secrets
+ 
+!.env.example
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+*.log
+
+# Operating system
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDEs and editors
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Testing
+coverage/
+
+# TypeScript
+*.tsbuildinfo
+
+# Android build outputs
+/android
+android/.gradle/
+android/local.properties
+android/**/build/
+android/captures/
+android/.cxx/
+android/.externalNativeBuild/
+
+# Android signing credentials
+*.jks
+*.keystore
+key.properties
+
+# iOS build outputs
+ios/Pods/
+ios/build/
+ios/DerivedData/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# React Native / Metro
+.metro-health-check*
