@@ -1,3 +1,5 @@
+import type { OfficeLocation } from './location';
+
 export type UserRole = 'EMPLOYEE' | 'SUPER_ADMIN' | 'ADMIN';
 export interface Employee {
   id: string;
@@ -10,4 +12,6 @@ export interface Employee {
   defaultShiftId: string;
   biometricEnabled: boolean;
   avatarUrl?: string;
+  /** Full office/geofence data returned by /api/employees/me — no extra API call needed. */
+  office?: OfficeLocation;
 }

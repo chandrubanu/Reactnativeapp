@@ -34,11 +34,11 @@ export function useSaveCenterSettings() {
 
 
 
-export function useGetAllActivities() {
+export function useGetAllActivities(todayDate:string) {
   const employee = useSessionStore((s) => s.employee);
   return useQuery({
     queryKey: ['admingetAllRecentActivities'],
-    queryFn: () => AdminDashboardRepository.getAllRecentActivities(),
+    queryFn: () => AdminDashboardRepository.getAllRecentActivities(todayDate),
     enabled: isSuperAdmin(employee), // never even fire the request for non-admins
   });
 }

@@ -6,6 +6,7 @@ import { RootStackParamList } from './types';
 import LoginScreen from '../screens/auth/LoginScreen';
 import MainTabNavigator from './MainTabNavigator';
 import { useAuth } from '../features/auth/useAuth';
+import { useSessionRestore } from '../features/auth/useSessionRestore';
 import { colors } from '../constants/theme';
 import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen';
 import { isSuperAdmin } from '../utils/roles';
@@ -17,11 +18,16 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
  * which stack to render — Login vs Main. No manual `navigation.navigate`
  * calls are needed after login/logout; changing `isAuthenticated` in the
  * Zustand store causes this component to re-render and React Navigation
- * swaps the whole stack. Angular comparison: like a route guard
- * (CanActivate) that redirects based on an observable auth state, except
- * here the "guard" is just a conditional render.
+ * swaps the whole stack.
+ *
+ * useSessionRestore() is called HERE — once, at the root — so that
+ * /api/employees/me is only fetched a single time on app boot, regardless
+ * of how many child components call useAuth().
  */
 export default function RootNavigator() {
+  // ✅ Single call: restores session from stored token on boot.
+  useSessionRestore();
+
   const { isAuthenticated, isRestoring, employee } = useAuth();
 
   if (isRestoring) {
@@ -31,7 +37,8 @@ export default function RootNavigator() {
       </View>
     );
   }
-const showAdminConsole = Platform.OS === 'web' && isSuperAdmin(employee);
+
+  const showAdminConsole = Platform.OS === 'web' && isSuperAdmin(employee);
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -46,3 +53,4 @@ const showAdminConsole = Platform.OS === 'web' && isSuperAdmin(employee);
     </NavigationContainer>
   );
 }
+

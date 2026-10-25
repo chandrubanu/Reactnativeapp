@@ -1,16 +1,20 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useGetAllActivities } from '@/features/admin/useAdminDashboard';
 import { colors } from '@/constants/theme';
 
 export default function AdminRecentActivities() {
+ const todayDate =  useMemo(
+    () => new Date().toISOString().split('T')[0],
+    [],
+  );
   const {
     data: employees = [],
     isLoading,
     isError,
-  } = useGetAllActivities();
+  } = useGetAllActivities(todayDate);
 
   if (isLoading) {
     return (
@@ -148,7 +152,7 @@ const styles = StyleSheet.create({
 
   scrollContent: {
     flexGrow: 1,
-    padding:15
+    marginTop:15
   },
 
 messageContainer: {

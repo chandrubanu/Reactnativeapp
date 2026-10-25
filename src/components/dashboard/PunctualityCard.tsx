@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   ringWrap: { alignItems: 'center', justifyContent: 'center' },
   percentText: {
     position: 'absolute',
-    ...typography.h2,
+    ...typography.bodyBold,
     color: colors.textPrimary,
   },
   label: { ...typography.caption, color: colors.textSecondary, marginTop: spacing.sm },

@@ -145,12 +145,12 @@ export default function DashboardScreen() {
           <Text style={styles.doneText}>No further action available today.</Text>
         )}
       </Card>
-      {/* <View style={styles.row}>
+      <View style={styles.row}>
         {<PunctualityCard percentage={summary.punctuality.percentage} />}
         <View style={styles.weeklyWrap}>
           <WeeklyOverview days={summary.weeklyOverview} />
         </View>
-      </View> */}
+      </View>
 
       <Text style={styles.sectionTitle}>Total Performance</Text>
       <PerformanceCard stats={summary.performance} />

@@ -42,17 +42,17 @@ interface LoginApiResponse {
 
 /**
  * Shape returned by GET /api/employees/me
- * {
- *   "id": 3,
- *   "username": "rahul",
- *   "displayName": "Rahul",
- *   "department": "Unassigned",
- *   "officeId": 1,
- *   "shiftId": 1,
- *   "enabled": true,
- *   "role": "EMPLOYEE"
- * }
+ * Includes the nested `office` object with geofence data.
  */
+interface MeOfficeResponse {
+  id: number | string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  radiusMeters: number;
+  timezone: string;
+}
+
 interface MeApiResponse {
   id: number | string;
   username: string;
@@ -65,6 +65,7 @@ interface MeApiResponse {
   email?: string;
   avatarUrl?: string;
   biometricEnabled?: boolean;
+  office?: MeOfficeResponse;
 }
 
 // ---------------------------------------------------------------------------
@@ -120,16 +121,30 @@ async function apiFetch<T>(
 function mapToEmployee(data: MeApiResponse): Employee {
   return {
     id: String(data.id ?? ''),
-    employeeCode: data.username ?? '',        // backend sends "username"
-    name: data.displayName ?? '',             // backend sends "displayName"
+    employeeCode: data.username ?? '',       // backend sends "username"
+    name: data.displayName ?? '',            // backend sends "displayName"
     email: data.email ?? '',
-    designation: data.department ?? '',       // backend sends "department"
+    designation: data.department ?? '',      // backend sends "department"
     role: (data.role as Employee['role']) ?? 'EMPLOYEE',
+    // Use officeId as the centerId key so locationRepository can match it.
     assignedCenterIds: data.officeId != null ? [String(data.officeId)] : [],
     defaultShiftId: data.shiftId != null ? String(data.shiftId) : '',
-    //biometricEnabled: data.biometricEnabled ?? false,
     biometricEnabled: true,
     avatarUrl: data.avatarUrl,
+    // Pass the full office object so locationRepository needs no extra API call.
+    office: data.office
+      ? {
+          centerId: String(data.officeId ?? data.office.id),
+          centerCode: String(data.officeId ?? data.office.id),
+          centerName: data.office.name,
+          latitude: data.office.latitude,
+          longitude: data.office.longitude,
+          geofenceRadiusMeters: data.office.radiusMeters,
+          gpsAccuracyThresholdMeters: data.office.radiusMeters,
+          timezone: data.office.timezone,
+          isActive: true,
+        }
+      : undefined,
   };
 }
 

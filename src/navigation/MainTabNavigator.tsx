@@ -7,22 +7,22 @@ import { colors } from '../constants/theme';
 import { Platform, View, Text, StyleSheet } from 'react-native';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
-// const showAdminConsole = Platform.OS === 'web';
-// function NotAuthorizedScreen() {
-//   return (
-//     <View style={styles.container}>
-//       <Ionicons
-//         name="lock-closed-outline"
-//         size={60}
-//         color={colors.textSecondary}
-//       />
-//       <Text style={styles.title}>Not Authorized</Text>
-//       <Text style={styles.message}>
-//         You are not authorized to access this page.
-//       </Text>
-//     </View>
-//   );
-// }
+const hideScreenBrowser = Platform.OS === 'web';
+function NotAuthorizedScreen() {
+  return (
+    <View style={styles.container}>
+      <Ionicons
+        name="lock-closed-outline"
+        size={60}
+        color={colors.textSecondary}
+      />
+      <Text style={styles.title}>Not Authorized</Text>
+      <Text style={styles.message}>
+        You are not authorized to access this page.
+      </Text>
+    </View>
+  );
+}
 
 export default function MainTabNavigator() {
 
@@ -37,10 +37,10 @@ export default function MainTabNavigator() {
     >
       <Tab.Screen
         name="Attendance"
-        // component={
-        //   showAdminConsole ? DashboardScreen : NotAuthorizedScreen
-        // }
-                component={DashboardScreen}
+        component={
+          !hideScreenBrowser ? DashboardScreen : NotAuthorizedScreen
+        }
+        // component={DashboardScreen}
 
         options={{
           tabBarIcon: ({ color, size }) => (

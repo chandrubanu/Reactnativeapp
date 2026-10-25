@@ -8,9 +8,9 @@
     "ios": "expo run:ios",
     "test": "jest",
     "lint": "eslint . --ext .ts,.tsx",
-    "web": "expo start --web",    
-  "predeploy": "npx expo export --platform web",
-  "deploy": "gh-pages --nojekyll -d dist"
+    "web": "expo start --web",
+    "predeploy": "npx expo export --platform web --clear",
+    "deploy": "gh-pages --nojekyll -d dist"
   },
   "dependencies": {
     "@expo/metro-runtime": "~57.0.17",

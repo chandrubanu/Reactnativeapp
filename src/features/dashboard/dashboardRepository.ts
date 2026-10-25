@@ -11,11 +11,11 @@ class MainDashboardRepository implements IDashboardRepository {
   async getSummary(employeeId: string): Promise<DashboardSummary> {
     try {
       const data: any = await authFetch<DashboardSummary>('/api/attendance/home');
-      // console.log(data)
+      console.log(data, "dataval")
       let todayvalue = data.today;
       let shift = todayvalue.shift;
       let daylablearray = ['M', 'T', 'W', 'T', 'F']
-      const to12Hour = (time: string): string => { 
+      const to12Hour = (time: string): string => {
         const [h, m] = time.split(':').map(Number);
         const period = h >= 12 ? 'PM' : 'AM';
         const hour12 = h % 12 === 0 ? 12 : h % 12;

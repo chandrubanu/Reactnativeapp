@@ -1,21 +1,21 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
 import { useAuth } from '../../features/auth/useAuth';
-import { useCenterSettings,getDashboardCount, useSaveCenterSettings } from '../../features/admin/useAdminDashboard';
+import { useCenterSettings, getDashboardCount, useSaveCenterSettings } from '../../features/admin/useAdminDashboard';
 import { isSuperAdmin } from '../../utils/roles';
-import { AdminShell } from '../../components/admin/AdminShell';  
+import { AdminShell } from '../../components/admin/AdminShell';
 import { admin } from '../../components/admin/adminTheme';
 import { AppError, AppErrorCode, ERROR_MESSAGES } from '../../constants/errors';
 import { colors, radii, spacing, typography } from '../../constants/theme';
-import { AdminDashboardCards } from '../../types/admin'; 
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-import { Octicons } from '@expo/vector-icons';
+import { AdminDashboardCards } from '../../types/admin';
+import { Ionicons } from '@expo/vector-icons';
 import AdminRecentActivities from '@/components/admin/AdminRecentActivities';
+import { PrimaryButton } from '@/components/common/PrimaryButton';
 
 export default function AdminDashboardScreen() {
   const { employee } = useAuth();
 
- 
+
   if (!isSuperAdmin(employee)) {
     return (
       <View style={styles.denied}>
@@ -27,88 +27,96 @@ export default function AdminDashboardScreen() {
 }
 
 function DashboardContent() {
-       const todayDate =  useMemo(
-  () => new Date().toISOString().split('T')[0],
-  [],
-); 
- const { data: query, isLoading, isError } = getDashboardCount(todayDate);
-const overview = query?.overview; 
-   const { employee } = useAuth();
-     const dateLabel = useMemo(
-       () =>
-         new Date()
-           .toLocaleDateString('en-US', {
-             weekday: 'long',
-             month: 'short',
-             day: 'numeric',
-             year: 'numeric',
-           }) ,
-       [],
-     ); 
+  const handlePunch = async () => {
 
-   console.log("query",query)
+  };
+  const todayDate = useMemo(
+    () => new Date().toISOString().split('T')[0],
+    [],
+  );
+  const { data: query, isLoading, isError } = getDashboardCount(todayDate);
+  const overview = query?.overview;
+  const { employee } = useAuth();
+  const dateLabel = useMemo(
+    () =>
+      new Date()
+        .toLocaleDateString('en-US', {
+          weekday: 'long',
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        }),
+    [],
+  );
+  console.log("query", query)
 
-const carddetails: AdminDashboardCards[] = [
-  {
-    title: 'Punched In',
-    count: overview?.punchedIn ?? 0,
-    icon: 'person-add',
-    percentage: String(overview?.punchedInChangePercent ?? 0),
-    color: 'primary',
-  },
-  {
-    title: 'Late Punches',
-    count: overview?.latePunches ?? 0,
-    icon: 'clock',
-    percentage: String(overview?.latePunchesChangePercent ?? 0),
-    color: 'textBrown',
-  },
-  {
-    title: 'Absentees',
-    count: overview?.absences ?? 0,
-    icon: 'x-circle',
-    percentage: '—',
-    color: 'danger',
-  },
-  {
-    title: 'With Permission',
-    count: overview?.withPermission ?? 0,
-    icon: 'check-circle',
-    percentage: '—',
-    color: 'success',
-  },
-];
+  const carddetails: AdminDashboardCards[] = [
+    {
+      title: 'Punched In',
+      count: overview?.punchedIn ?? 0,
+      icon: 'person-add-outline',
+      percentage: String(overview?.punchedInChangePercent ?? 0),
+      color: 'primary',
+    },
+    {
+      title: 'Late Punches',
+      count: overview?.latePunches ?? 0,
+      icon: 'time-outline',
+      percentage: String(overview?.latePunchesChangePercent ?? 0),
+      color: 'textBrown',
+    },
+    {
+      title: 'Absentees',
+      count: overview?.absences ?? 0,
+      icon: 'close-circle',
+      percentage: '—',
+      color: 'danger',
+    },
+    {
+      title: 'With Permission',
+      count: overview?.withPermission ?? 0,
+      icon: 'checkmark-circle-outline',
+      percentage: '—',
+      color: 'success',
+    },
+  ];
 
   return (
     <AdminShell activeItem="Dashboard" pageTitle="Dashboard">
-      <View style={styles.headerRow}> 
+      <View style={styles.headerRow}>
         <View style={{ flex: 1 }}>
           <Text style={styles.h1}>Today's Overview</Text>
           <Text style={styles.desc}>
             Welcome Back  {employee?.name}, Real - time attendance summary for {dateLabel}
           </Text>
-        </View>  
-      </View> 
- <View style={styles.headerRow}> 
-   { carddetails.map((card) => (
-  <View key={`${card.title}-${card.count}`}  style={styles.card}>
-  <View style={styles.cardHeader}> 
-    
-    <View style={[styles.iconBox,{ backgroundColor: `${colors[card.color]}12`}]}>  
-       <Octicons style={styles.icon}   name={card.icon}  size={20} color={colors[card.color]} /> 
-    </View>
+        </View>
+      </View>
+      <View style={styles.headerRow}>
+        {carddetails.map((card) => (
+          <View key={`${card.title}-${card.count}`} style={styles.card}>
+            <View style={styles.cardHeader}>
 
-    <View style={[styles.badge,{ backgroundColor: `${colors[card.color]}12`}]}>
-      <Text   style={[styles.badgeText, { color: colors[card.color] }]} >{card.percentage}</Text>
-    </View>
-  </View>
+              <View style={[styles.iconBox, { backgroundColor: `${colors[card.color]}12` }]}>
+                <Ionicons style={styles.icon} name={card.icon} size={20} color={colors[card.color]} />
+              </View>
 
-  <Text style={styles.count}>{card.count}</Text>
-  <Text style={styles.label}>{card.title}</Text>
-</View>
-  ))}
-  </View>
-  <AdminRecentActivities/>
+              <View style={[styles.badge, { backgroundColor: `${colors[card.color]}12` }]}>
+                <Text style={[styles.badgeText, { color: colors[card.color] }]} >{card.percentage}</Text>
+              </View>
+            </View>
+
+            <Text style={styles.count}>{card.count}</Text>
+            <Text style={styles.label}>{card.title}</Text>
+          </View>
+        ))}
+      </View>
+      <View className="flex-row items-center justify-between"   >
+        <Text style={styles.h1}>Recent Activity</Text>
+        <Pressable className="w-[100px] text-[10px] py-1 rounded-[7px] bg-primary items-center" onPress={handlePunch}>
+          <Text className=" text-white">Export CSV</Text>
+        </Pressable>
+      </View>
+      <AdminRecentActivities />
       {isLoading ? <ActivityIndicator color={colors.primary} style={{ marginTop: spacing.xl }} /> : null}
       {isError ? <Text style={styles.message}>{ERROR_MESSAGES[AppErrorCode.SERVER_ERROR]}</Text> : null}
 
@@ -119,9 +127,9 @@ const carddetails: AdminDashboardCards[] = [
 const styles = StyleSheet.create({
   denied: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   deniedText: { ...typography.bodyBold, color: colors.danger },
-  headerRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.lg ,marginBottom: spacing.md, marginTop: spacing.md ,width: '100%',  },
+  headerRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.lg, marginBottom: spacing.md, marginTop: spacing.md, width: '100%', },
   h1: { ...typography.bodyBold, color: colors.textPrimary },
-  desc: { ...typography.body, textTransform:'capitalize', fontSize: 13, color: colors.textSecondary, marginTop: 6  },
+  desc: { ...typography.body, textTransform: 'capitalize', fontSize: 13, color: colors.textSecondary, marginTop: 6 },
   saveBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.primary,
     paddingHorizontal: spacing.lg, paddingVertical: spacing.sm + 4, borderRadius: radii.sm, minWidth: 148, justifyContent: 'center',
@@ -129,12 +137,12 @@ const styles = StyleSheet.create({
   saveBtnDisabled: { backgroundColor: '#A9B6D6' },
   saveText: { color: '#fff', fontWeight: '700', fontSize: 13 },
   message: { marginTop: spacing.sm, fontSize: 13 },
-  section: { backgroundColor: admin.sectionBg, borderRadius: radii.md, padding: spacing.lg, marginTop: spacing.lg, gap: spacing.md ,flex: 1},
+  section: { backgroundColor: admin.sectionBg, borderRadius: radii.md, padding: spacing.lg, marginTop: spacing.lg, gap: spacing.md, flex: 1 },
   sectionHead: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   sectionIcon: { width: 40, height: 40, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   sectionTitle: { ...typography.bodyBold, color: colors.textPrimary },
   sectionDesc: { fontSize: 13, color: colors.textSecondary },
-  cardsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md }, 
+  cardsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
   card: {
     flex: 1,
     minHeight: 174,
@@ -162,10 +170,10 @@ const styles = StyleSheet.create({
   },
 
   icon: {
-    fontSize: 23, 
+    fontSize: 23,
   },
 
-  badge: { 
+  badge: {
     paddingHorizontal: 7,
     paddingVertical: 3,
     borderRadius: 12,
@@ -173,7 +181,7 @@ const styles = StyleSheet.create({
 
   badgeText: {
     fontSize: 10,
-    fontWeight: '600', 
+    fontWeight: '600',
   },
 
   count: {
@@ -187,6 +195,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#172554',
     marginTop: 2,
-  }, 
+  },
 
 });

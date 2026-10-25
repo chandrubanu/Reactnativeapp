@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { authRepository, LoginCredentials } from './authRepository';
 import { useSessionStore } from '../../store/sessionStore';
 import { secureStorage } from '../../storage/secureStorage';
@@ -6,36 +6,17 @@ import { AppError, AppErrorCode, ERROR_MESSAGES } from '../../constants/errors';
 
 /**
  * useAuth composes: the Zustand session store (identity) + the auth
- * repository (mock "API") + SecureStore (persisted token). Screens only
- * ever call useAuth() — they never touch SecureStore or the repository
- * directly. This is the RN equivalent of an Angular AuthService that
- * wraps HttpClient + a token storage service behind one clean API.
+ * repository + SecureStore (persisted token). Screens only ever call
+ * useAuth() — they never touch SecureStore or the repository directly.
+ *
+ * NOTE: Session restoration (the /api/employees/me boot call) has been
+ * intentionally moved to useSessionRestore.ts and is called ONCE at the
+ * root of the component tree (RootNavigator). This prevents the API from
+ * being called multiple times when multiple components use useAuth().
  */
 export function useAuth() {
-  const { isAuthenticated, isRestoring, employee, setSession, clearSession, setRestoring } =
+  const { isAuthenticated, isRestoring, employee, setSession, clearSession } =
     useSessionStore();
-
-  // Session restoration on app boot — runs once. Angular comparison:
-  // similar to an APP_INITIALIZER that checks for a stored JWT before
-  // the app finishes bootstrapping.
-  useEffect(() => {
-    (async () => {
-      const token = await secureStorage.getToken();
-      if (!token) {
-        setRestoring(false);
-        return;
-      }
-      try {
-        const restoredEmployee = await authRepository.fetchEmployeeByToken(token);
-        setSession(restoredEmployee, token);
-      } catch {
-        await secureStorage.clear();
-      } finally {
-        setRestoring(false);
-      }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const login = useCallback(async (credentials: LoginCredentials) => {
     try {

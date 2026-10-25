@@ -15,7 +15,7 @@ export interface IAdminDashboardRepository {
   getAllShifts(): Promise<ShiftTemplate[]>;
   getShiftsForCenter(centerId: string): Promise<ShiftTemplate[]>;
   getShiftById(shiftId: string): Promise<ShiftTemplate | null>;
-  getAllRecentActivities(): Promise<RecentActivities[]>;
+  getAllRecentActivities(todayDate:string): Promise<RecentActivities[]>;
   
 }
 
@@ -132,8 +132,8 @@ class MockAdminDashboardRepository implements IAdminDashboardRepository {
 
   //new values
  
-  async getAllRecentActivities(): Promise<RecentActivities[]> {  
-  const response: any = await authFetch<RecentActivities>('/api/admin/activity?officeId=1&date=2026-10-24&page=0&size=10');
+  async getAllRecentActivities(todayDate:string): Promise<RecentActivities[]> {  
+  const response: any = await authFetch<RecentActivities>(`/api/admin/activity?date=${todayDate}&page=0&size=10`);
   if (!response || !Array.isArray(response.items)) {
     throw new Error('Failed to fetch recent activities');
   } 
@@ -153,17 +153,10 @@ class MockAdminDashboardRepository implements IAdminDashboardRepository {
   }).replace(/\//g, '-'):'- - -',
     department: user.department,
   }));
-}
-//   async getDashboardCount(dateLabel:string): Promise<AdminDashboardCards> {  
-//   const response: any = await authFetch<RecentActivities>(`/api/admin/dashboard?officeId=1&date=${dateLabel}&page=0&size=20`);
-//   if (!response || !Array.isArray(response.items)) {
-//     throw new Error('Failed to fetch recent activities');
-//   } 
-//   return response; 
-// }
-async getDashboardCount(dateLabel: string): Promise<DashboardResponse> {
+} 
+async getDashboardCount(dateLabel: string): Promise<DashboardResponse> {  
   const response = await authFetch<DashboardResponse>(
-    `/api/admin/dashboard?officeId=1&date=${encodeURIComponent(dateLabel)}&page=0&size=20`,
+    `/api/admin/dashboard?date=${encodeURIComponent(dateLabel)}&page=0&size=20`,
   );
 
  if (!response?.overview) {
