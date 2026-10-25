@@ -1,16 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
 import { useAuth } from '../../features/auth/useAuth';
-import { useCenterSettings, getDashboardCount, useSaveCenterSettings } from '../../features/admin/useAdminDashboard';
+import { useCenterSettings, getDashboardCount, useSaveCenterSettings, useExportAttendanceCsv } from '../../features/admin/useAdminDashboard';
 import { isSuperAdmin } from '../../utils/roles';
 import { AdminShell } from '../../components/admin/AdminShell';
 import { admin } from '../../components/admin/adminTheme';
 import { AppError, AppErrorCode, ERROR_MESSAGES } from '../../constants/errors';
 import { colors, radii, spacing, typography } from '../../constants/theme';
 import { AdminDashboardCards } from '../../types/admin';
-import { Ionicons } from '@expo/vector-icons';
+import { Octicons } from '@expo/vector-icons';
 import AdminRecentActivities from '@/components/admin/AdminRecentActivities';
-import { PrimaryButton } from '@/components/common/PrimaryButton';
 
 export default function AdminDashboardScreen() {
   const { employee } = useAuth();
@@ -27,9 +26,7 @@ export default function AdminDashboardScreen() {
 }
 
 function DashboardContent() {
-  const handlePunch = async () => {
-
-  };
+  const { mutate: exportCsv, isPending: isExporting } = useExportAttendanceCsv();
   const todayDate = useMemo(
     () => new Date().toISOString().split('T')[0],
     [],
@@ -48,36 +45,45 @@ function DashboardContent() {
         }),
     [],
   );
+
+  const handlePunch = () => {
+    const officeId = employee?.office?.centerId;
+    if (!officeId) {
+      alert('No office assigned. Cannot export.');
+      return;
+    }
+    exportCsv({ officeId, date: todayDate });
+  };
   console.log("query", query)
 
   const carddetails: AdminDashboardCards[] = [
     {
       title: 'Punched In',
       count: overview?.punchedIn ?? 0,
-      icon: 'person-add-outline',
+      icon: 'check-circle',
       percentage: String(overview?.punchedInChangePercent ?? 0),
-      color: 'primary',
+      color: 'success',
     },
     {
       title: 'Late Punches',
       count: overview?.latePunches ?? 0,
-      icon: 'time-outline',
+      icon: 'clock',
       percentage: String(overview?.latePunchesChangePercent ?? 0),
       color: 'textBrown',
     },
     {
       title: 'Absentees',
       count: overview?.absences ?? 0,
-      icon: 'close-circle',
+      icon: 'circle-slash',
       percentage: '—',
       color: 'danger',
     },
     {
       title: 'With Permission',
       count: overview?.withPermission ?? 0,
-      icon: 'checkmark-circle-outline',
+      icon: 'shield-check',
       percentage: '—',
-      color: 'success',
+      color: 'primary',
     },
   ];
 
@@ -97,7 +103,7 @@ function DashboardContent() {
             <View style={styles.cardHeader}>
 
               <View style={[styles.iconBox, { backgroundColor: `${colors[card.color]}12` }]}>
-                <Ionicons style={styles.icon} name={card.icon} size={20} color={colors[card.color]} />
+                <Octicons style={styles.icon} name={card.icon} size={20} color={colors[card.color]} />
               </View>
 
               <View style={[styles.badge, { backgroundColor: `${colors[card.color]}12` }]}>
@@ -112,8 +118,13 @@ function DashboardContent() {
       </View>
       <View className="flex-row items-center justify-between"   >
         <Text style={styles.h1}>Recent Activity</Text>
-        <Pressable className="w-[100px] text-[10px] py-1 rounded-[7px] bg-primary items-center" onPress={handlePunch}>
-          <Text className=" text-white">Export CSV</Text>
+        <Pressable
+          className="w-[100px] text-[10px] py-1 rounded-[7px] bg-primary items-center"
+          onPress={handlePunch}
+          disabled={isExporting}
+          style={{ opacity: isExporting ? 0.6 : 1 }}
+        >
+          <Text className=" text-white">{isExporting ? 'Exporting…' : 'Export CSV'}</Text>
         </Pressable>
       </View>
       <AdminRecentActivities />

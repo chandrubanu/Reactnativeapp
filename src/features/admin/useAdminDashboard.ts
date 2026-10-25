@@ -42,3 +42,11 @@ export function useGetAllActivities(todayDate:string) {
     enabled: isSuperAdmin(employee), // never even fire the request for non-admins
   });
 }
+
+/** Triggers GET /api/admin/activity/export and downloads the CSV file. */
+export function useExportAttendanceCsv() {
+  return useMutation({
+    mutationFn: ({ officeId, date, search }: { officeId: string; date: string; search?: string }) =>
+      AdminDashboardRepository.exportAttendanceCsv(officeId, date, search),
+  });
+}

@@ -3,7 +3,7 @@
 // no admin write screens ship in this build, but the shapes are defined
 
 import { colors } from "@/constants/theme";
-import { Ionicons } from "@expo/vector-icons";
+import { Octicons } from "@expo/vector-icons";
 
 // so backend integration in Phase-11-equivalent work has a contract.  
 export interface FulfillmentCenterConfig {
@@ -49,7 +49,7 @@ export interface RecentActivities {
 }
 
 export interface AdminDashboardCards {
-  title: string, count: number, icon: any; percentage: string, color: keyof typeof colors
+  title: string, count: number, icon: keyof typeof Octicons.glyphMap; percentage: string, color: keyof typeof colors
 }
 
 export interface DashboardAttendanceItem {

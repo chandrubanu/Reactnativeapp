@@ -1,12 +1,13 @@
-import { CenterSettings, RecentActivities,AdminDashboardCards,DashboardResponse } from '../../types/admin';
+import { CenterSettings, RecentActivities, AdminDashboardCards, DashboardResponse } from '../../types/admin';
 import { ShiftTemplate } from '../../types/shift';
 import { Employee } from '../../types/employee';
 import { AppError, AppErrorCode } from '../../constants/errors';
 import { isSuperAdmin } from '../../utils/roles';
-import { authFetch } from '@/api/apiClient';
+import { authFetch, BASE_URL } from '@/api/apiClient';
+import { useSessionStore } from '../../store/sessionStore';
 
-export interface IAdminDashboardRepository { 
-  getDashboardCount(dateLabel:string): Promise<DashboardResponse>;
+export interface IAdminDashboardRepository {
+  getDashboardCount(dateLabel: string): Promise<DashboardResponse>;
   getCenterSettings(actor: Employee): Promise<CenterSettings[]>;
   saveCenterSettings(actor: Employee, centers: CenterSettings[]): Promise<CenterSettings[]>;
   saveShiftTemplates(actor: Employee, shifts: ShiftTemplate[]): Promise<ShiftTemplate[]>;
@@ -15,8 +16,9 @@ export interface IAdminDashboardRepository {
   getAllShifts(): Promise<ShiftTemplate[]>;
   getShiftsForCenter(centerId: string): Promise<ShiftTemplate[]>;
   getShiftById(shiftId: string): Promise<ShiftTemplate | null>;
-  getAllRecentActivities(todayDate:string): Promise<RecentActivities[]>;
-  
+  getAllRecentActivities(todayDate: string): Promise<RecentActivities[]>;
+  /** Download attendance CSV for the given office + date. Triggers a browser file download. */
+  exportAttendanceCsv(officeId: string, date: string, search?: string): Promise<void>;
 }
 
 // ─── Center (location + geofence) data ───────────────────────────────────────
@@ -76,7 +78,7 @@ let shiftDb: ShiftTemplate[] = [
     gracePeriodMinutes: 10, breakDurationMinutes: 30, crossesMidnight: false,
   },
 ];
- 
+
 
 // ─── Role guard ───────────────────────────────────────────────────────────────
 function assertSuperAdmin(actor: Employee) {
@@ -131,39 +133,66 @@ class MockAdminDashboardRepository implements IAdminDashboardRepository {
   }
 
   //new values
- 
-  async getAllRecentActivities(todayDate:string): Promise<RecentActivities[]> {  
-  const response: any = await authFetch<RecentActivities>(`/api/admin/activity?date=${todayDate}&page=0&size=10`);
-  if (!response || !Array.isArray(response.items)) {
-    throw new Error('Failed to fetch recent activities');
-  } 
-  const users = response.items; 
-  
-  return users.map((user: any) => ({
-    id: String(user.employeeId),
-    name: user.employeeName,
-    avatar: '👨🏻‍💼',
-    status: user.status  ,
-    punchIn: user.punchInTime?new Date(user.punchInTime)
-  .toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    timeZone: 'UTC',
-  }).replace(/\//g, '-'):'- - -',
-    department: user.department,
-  }));
-} 
-async getDashboardCount(dateLabel: string): Promise<DashboardResponse> {  
-  const response = await authFetch<DashboardResponse>(
-    `/api/admin/dashboard?date=${encodeURIComponent(dateLabel)}&page=0&size=20`,
-  );
 
- if (!response?.overview) {
-    throw new Error('Invalid dashboard response');
-  } 
-  return response;
-}
+  async getAllRecentActivities(todayDate: string): Promise<RecentActivities[]> {
+    const response: any = await authFetch<RecentActivities>(`/api/admin/activity?date=${todayDate}&page=0&size=10`);
+    if (!response || !Array.isArray(response.items)) {
+      throw new Error('Failed to fetch recent activities');
+    }
+    const users = response.items;
+
+    return users.map((user: any) => ({
+      id: String(user.employeeId),
+      name: user.employeeName,
+      avatar: '👨🏻‍💼',
+      status: user.status,
+      punchIn: user.punchInTime ? new Date(user.punchInTime)
+        .toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          timeZone: 'UTC',
+        }).replace(/\//g, '-') : '- - -',
+      department: user.department,
+    }));
+  }
+  async getDashboardCount(dateLabel: string): Promise<DashboardResponse> {
+    const response = await authFetch<DashboardResponse>(
+      `/api/admin/dashboard?date=${encodeURIComponent(dateLabel)}&page=0&size=20`,
+    );
+
+    if (!response?.overview) {
+      throw new Error('Invalid dashboard response');
+    }
+    return response;
+  }
+
+  async exportAttendanceCsv(officeId: string, date: string, search?: string): Promise<void> {
+    const token = useSessionStore.getState().token;
+
+    // Build query string
+    const params = new URLSearchParams({ officeId, date });
+    if (search?.trim()) params.set('search', search.trim());
+
+    const response: any = await authFetch('/api/admin/activity/export');
+
+    if (response.status === 401) throw new AppError(AppErrorCode.SESSION_EXPIRED);
+    if (response.status === 403) throw new AppError(AppErrorCode.FORBIDDEN);
+    if (!response.ok) throw new AppError(AppErrorCode.SERVER_ERROR);
+
+    const csvText = await response.text();
+
+    // Trigger browser download
+    const blob = new Blob([csvText], { type: 'text/csv;charset=UTF-8' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = 'attendance.csv';
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    URL.revokeObjectURL(url);
+  }
 }
 
 export const AdminDashboardRepository: IAdminDashboardRepository = new MockAdminDashboardRepository();
