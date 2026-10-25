@@ -1,26 +1,12 @@
-import { Platform } from 'react-native';
+import { BASE_URL } from '../config/env';
 import { useSessionStore } from '../store/sessionStore';
 import { AppError, AppErrorCode } from '../constants/errors';
 
-/**
- * Base URL for all API calls.
- *
- * - Web (npm run web)       → localhost works fine
- * - Android emulator        → 10.0.2.2 maps to host machine localhost
- * - Physical device (WiFi)  → use your machine's actual LAN IP
- *
- * ⚠️ Change PHYSICAL_DEVICE_IP if your machine's WiFi IP changes.
- */
-const PHYSICAL_DEVICE_IP = '10.216.137.85';
-
-// export const BASE_URL =
-//   Platform.OS === 'web'
-//     ? 'http://localhost:8080/attendance'
-//     : Platform.OS === 'android'
-//       ? `http://${PHYSICAL_DEVICE_IP}:8080/attendance`   // physical device
-//       : `http://${PHYSICAL_DEVICE_IP}:8080/attendance`;  // iOS physical device
-export const BASE_URL = 'https://app.footpro.in/attendance'
-
+// BASE_URL is resolved from EXPO_PUBLIC_API_BASE_URL env variable.
+// Configure it in .env.local (dev) or .env.production (prod).
+// See src/config/env.ts for full details.
+export { BASE_URL };
+ 
 /**
  * Authenticated fetch wrapper.
  *

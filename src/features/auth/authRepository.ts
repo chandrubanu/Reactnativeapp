@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { BASE_URL } from '../../config/env';
 import { Employee } from '../../types/employee';
 import { AppError, AppErrorCode } from '../../constants/errors';
 
@@ -25,19 +25,10 @@ export interface IAuthRepository {
 // Configuration
 // ---------------------------------------------------------------------------
 
-/**
- * Change PHYSICAL_DEVICE_IP to your machine's WiFi IP when testing on a
- * real device. Find it by running: ipconfig (Windows) / ifconfig (Mac/Linux)
- * ⚠️  localhost does NOT work on physical phones — the phone's localhost
- *    is the phone itself, not your development machine.
- */
-const PHYSICAL_DEVICE_IP = '10.216.137.85';
-
-// export const BASE_URL =
-//   Platform.OS === 'web'
-//     ? 'http://localhost:8080/attendance'
-//     : `http://${PHYSICAL_DEVICE_IP}:8080/attendance`;
-export const BASE_URL = 'https://app.footpro.in/attendance'
+// BASE_URL is resolved from EXPO_PUBLIC_API_BASE_URL env variable.
+// Configure it in .env.local (dev) or .env.production (prod).
+// See src/config/env.ts for full details.
+export { BASE_URL };
 
 
 // ---------------------------------------------------------------------------
