@@ -11,10 +11,8 @@ class MainDashboardRepository implements IDashboardRepository {
   async getSummary(employeeId: string): Promise<DashboardSummary> {
     try {
       const data: any = await authFetch<DashboardSummary>('/api/attendance/home');
-      console.log(data, "dataval")
       let todayvalue = data.today;
       let shift = todayvalue.shift;
-      let daylablearray = ['M', 'T', 'W', 'T', 'F']
       const to12Hour = (time: string): string => {
         const [h, m] = time.split(':').map(Number);
         const period = h >= 12 ? 'PM' : 'AM';
@@ -34,11 +32,14 @@ class MainDashboardRepository implements IDashboardRepository {
           lateDays: 1,
           periodLabel: 'This Month',
         },
-        weeklyOverview: data.weeklyOverview.map((each: any, index: number) => ({
-          dayLabel: daylablearray[index],
-          //dayLabel: each.date.slice(-2),
+        weeklyOverview: data.weeklyOverview.map((each: any) => ({
+          // Derive weekday label directly from the date so it works regardless
+          // of how many items the API returns (API sends 7: today + 6 future).
+          dayLabel: new Date(each.date + 'T00:00:00')
+            .toLocaleDateString('en-US', { weekday: 'short' })
+            .slice(0, 1), // 'Mon' → 'M', 'Tue' → 'T', etc.
           workedHours: each.workedHours,
-          isToday: (todayvalue.date == each.date) ? true : false,
+          isToday: todayvalue.date === each.date,
         })),
         performance: {
           daily: { value: 12, deltaLabel: '+2 vs prev' },

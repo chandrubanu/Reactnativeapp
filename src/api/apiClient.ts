@@ -6,7 +6,7 @@ import { AppError, AppErrorCode } from '../constants/errors';
 // Configure it in .env.local (dev) or .env.production (prod).
 // See src/config/env.ts for full details.
 export { BASE_URL };
- 
+
 /**
  * Authenticated fetch wrapper.
  *
@@ -25,7 +25,6 @@ export async function authFetch<T>(
 ): Promise<T> {
   // Read the current token directly from the Zustand store (outside React).
   const token = useSessionStore.getState().token;
-  console.log('authFetch token:', token ? 'present' : 'MISSING', '| path:', path);
 
   // Destructure headers out of options so we can merge them safely.
   // Spreading ...options after headers would overwrite the headers key entirely.
@@ -44,14 +43,11 @@ export async function authFetch<T>(
         ...(callerHeaders ?? {}),
       },
     });
-    console.log('authFetch response status:', response.status, '| path:', path);
   } catch (networkErr) {
-    console.log('authFetch network error:', networkErr);
     throw new AppError(AppErrorCode.NETWORK_ERROR);
   }
 
   if (response.status === 401) {
-    console.log('authFetch: 401 Unauthorized -', path, '- token was:', token ? 'present' : 'MISSING');
     throw new AppError(AppErrorCode.SESSION_EXPIRED);
   }
 
@@ -69,7 +65,6 @@ export async function authFetch<T>(
       // ignore JSON parse failure
     }
     alert(responseBody.detail)
-    console.log(`authFetch: ${response.status} error on ${path}`, responseBody);
     throw new AppError(AppErrorCode.SERVER_ERROR, serverMessage);
   }
 

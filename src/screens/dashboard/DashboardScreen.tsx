@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, View, StyleSheet, Text, RefreshControl } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../features/auth/useAuth';
 import { useDashboardSummary } from '../../features/dashboard/useDashboard';
 import { useTodayAttendance, useSubmitPunch } from '../../features/attendance/useAttendance';
@@ -26,6 +27,7 @@ import { Card } from '@/components/common/Card';
  */
 export default function DashboardScreen() {
   const { employee, logout } = useAuth();
+  const insets = useSafeAreaInsets();
   const employeeId = employee?.id;
 
   const { data: summary, isLoading: loadingSummary, refetch: refetchSummary } =
@@ -72,10 +74,6 @@ export default function DashboardScreen() {
       // BIOMETRIC_NOT_AVAILABLE message rather than silently skipping it.
       let biometricVerified = false;
       if (employee.biometricEnabled) {
-        const available = await isBiometricAvailable();
-        if (!available) {
-          throw new AppError(AppErrorCode.BIOMETRIC_NOT_AVAILABLE);
-        }
         biometricVerified = await authenticateWithBiometrics('Verify to record attendance');
       }
 
@@ -117,7 +115,7 @@ export default function DashboardScreen() {
   return (
     <ScrollView
       style={styles.screen}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingTop: insets.top + 16 }]}
       refreshControl={<RefreshControl refreshing={false} onRefresh={handleRefresh} />}
     >
       <DashboardHeader employeeName={employee.name} dateLabel={dateLabel} />
@@ -131,7 +129,7 @@ export default function DashboardScreen() {
 
         <LocationStatusCard isChecking={isChecking} result={locationResult} errorMessage={locationError} />
 
-        {/* {actionError ? <Text style={styles.actionError}>{actionError}</Text> : null} */}
+        {actionError ? <Text style={styles.actionError}>{actionError}</Text> : null}
 
         {primaryAction ? (
           <AttendanceActionButton
@@ -152,8 +150,8 @@ export default function DashboardScreen() {
         </View>
       </View>
 
-      <Text style={styles.sectionTitle}>Total Performance</Text>
-      <PerformanceCard stats={summary.performance} />
+      {/* <Text style={styles.sectionTitle}>Total Performance</Text>
+      <PerformanceCard stats={summary.performance} /> */}
 
       <Text onPress={logout} style={styles.logout}>
         Log out

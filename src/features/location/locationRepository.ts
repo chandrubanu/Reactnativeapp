@@ -14,7 +14,6 @@ class HttpLocationRepository implements ILocationRepository {
   async getAuthorizedLocationsForEmployee(employeeId: string): Promise<OfficeLocation[]> {
     // ✅ Primary: use the office already loaded from /api/employees/me (no extra API call)
     const employee = useSessionStore.getState().employee;
-    console.log('employee', employee?.office)
     if (employee?.office) {
       return [employee.office];
     }

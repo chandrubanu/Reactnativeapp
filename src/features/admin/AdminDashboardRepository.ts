@@ -170,11 +170,20 @@ class MockAdminDashboardRepository implements IAdminDashboardRepository {
   async exportAttendanceCsv(officeId: string, date: string, search?: string): Promise<void> {
     const token = useSessionStore.getState().token;
 
-    // Build query string
+    // Build query string with required params
     const params = new URLSearchParams({ officeId, date });
     if (search?.trim()) params.set('search', search.trim());
 
-    const response: any = await authFetch('/api/admin/activity/export');
+    // Must use raw fetch — authFetch always sends Accept: application/json
+    // which causes the server to return 406 Not Acceptable for CSV endpoints.
+    const { BASE_URL: baseUrl } = await import('@/api/apiClient');
+    const response = await fetch(`${baseUrl}/api/admin/activity/export?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        Accept: 'text/csv',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
 
     if (response.status === 401) throw new AppError(AppErrorCode.SESSION_EXPIRED);
     if (response.status === 403) throw new AppError(AppErrorCode.FORBIDDEN);
@@ -182,7 +191,7 @@ class MockAdminDashboardRepository implements IAdminDashboardRepository {
 
     const csvText = await response.text();
 
-    // Trigger browser download
+    // Trigger browser file download
     const blob = new Blob([csvText], { type: 'text/csv;charset=UTF-8' });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');

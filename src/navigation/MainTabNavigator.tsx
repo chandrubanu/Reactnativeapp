@@ -31,8 +31,9 @@ export default function MainTabNavigator() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textSecondary,
+        tabBarStyle: { display: 'none' },
+        // tabBarActiveTintColor: colors.primary,
+        // tabBarInactiveTintColor: colors.textSecondary,
       }}
     >
       <Tab.Screen

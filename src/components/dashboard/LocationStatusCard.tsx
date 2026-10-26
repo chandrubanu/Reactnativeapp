@@ -44,19 +44,18 @@ export function LocationStatusCard({ isChecking, result, errorMessage }: Locatio
       </View>
     );
   }
-
-  if (result.centerId && result.isAccuracyAcceptable === false) {
-    return (
-      <View style={[styles.container, styles.warn]}>
-        <Text style={styles.warnText}>GPS accuracy is too low to confirm your location.</Text>
-        <Text style={styles.meta}>
-          {result.centerName} · {formatDistance(result.distanceMeters)}m away · GPS accuracy{' '}
-          {formatDistance(result.accuracyMeters)}m (maximum {result.accuracyThresholdMeters}m).
-          Move to an open area and check again.
-        </Text>
-      </View>
-    );
-  }
+  // if (result.centerId && result.isAccuracyAcceptable === false) {
+  //   return (
+  //     <View style={[styles.container, styles.warn]}>
+  //       <Text style={styles.warnText}>GPS accuracy is too low to confirm your location.</Text>
+  //       <Text style={styles.meta}>
+  //         {result.centerName} · {formatDistance(result.distanceMeters)}m away · GPS accuracy{' '}
+  //         {formatDistance(result.accuracyMeters)}m (maximum {result.accuracyThresholdMeters}m).
+  //         Move to an open area and check again.
+  //       </Text>
+  //     </View>
+  //   );
+  // }
 
   if (result.isInside) {
     return (
@@ -65,6 +64,11 @@ export function LocationStatusCard({ isChecking, result, errorMessage }: Locatio
         <Text style={styles.meta}>
           {result.centerName} · {formatDistance(result.distanceMeters)}m away
         </Text>
+        {result.isAccuracyAcceptable === false && (
+          <Text style={styles.accuracyWarn}>
+            ⚠️ GPS accuracy is low ({formatDistance(result.accuracyMeters)}m). You can still punch in.
+          </Text>
+        )}
       </View>
     );
   }
@@ -96,4 +100,5 @@ const styles = StyleSheet.create({
   warn: {},
   warnText: { ...typography.bodyBold, color: colors.danger },
   meta: { ...typography.caption, color: colors.textSecondary, marginTop: 2 },
+  accuracyWarn: { ...typography.caption, color: colors.warning, marginTop: 4 },
 });

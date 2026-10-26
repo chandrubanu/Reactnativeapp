@@ -62,7 +62,6 @@ class MockAttendanceRepository implements IAttendanceRepository {
   }
 
   async submitPunch(request: PunchRequest): Promise<PunchResponse> {
-    console.log("submitPunch", request)
     const {
       punchType,
       coordinates,
@@ -80,7 +79,6 @@ class MockAttendanceRepository implements IAttendanceRepository {
         "capturedAt": timestampIso
       }
     }
-    console.log('Punch API response:', value);
     try {
       const data: any = await authFetch<PunchResponse>('/api/attendance/punch', {
         method: 'POST',
@@ -97,7 +95,6 @@ class MockAttendanceRepository implements IAttendanceRepository {
       return response;
     } catch (err) {
       // Log the full error so we can see the real failure reason in Metro logs
-      console.log('submitPunch error:', JSON.stringify(err), err);
       throw err;
     }
   }

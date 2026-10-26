@@ -109,15 +109,19 @@ function validateAgainstLocations(
   withDistances.sort((a, b) => a.distance - b.distance);
   const nearest = withDistances[0];
 
-  // Accuracy gate: if the device's reported accuracy radius is worse than
-  // the center's configured threshold, we cannot trust the reading enough
-  // to allow a punch, even if the raw coordinates look "inside".
+  // Accuracy gate: report whether the GPS reading is precise enough, but
+  // do NOT hard-block the punch on accuracy alone. When the user is physically
+  // inside the geofence, poor indoor GPS (200–400 m) should warn, not block.
+  // isInside = true when coordinates are within the allowed radius.
+  // isAccuracyAcceptable = false triggers a warning in the UI, allowing the
+  // user to retry for a better reading, but they can still punch through.
   const accuracyOk = sample.accuracyMeters <= nearest.loc.gpsAccuracyThresholdMeters;
   const withinRadius = nearest.distance <= nearest.loc.geofenceRadiusMeters;
 
   return {
-    isInside: accuracyOk && withinRadius,
-    isAccuracyAcceptable: accuracyOk,
+    // isInside: accuracyOk && withinRadius, 
+    isInside: withinRadius,               // accuracy no longer blocks punching
+    isAccuracyAcceptable: accuracyOk,     // UI shows warning if false, not a blocker
     accuracyThresholdMeters: nearest.loc.gpsAccuracyThresholdMeters,
     centerId: nearest.loc.centerId,
     centerName: nearest.loc.centerName,

@@ -12,6 +12,12 @@ import { AppError, AppErrorCode } from '../constants/errors';
  */
 
 export async function isBiometricAvailable(): Promise<boolean> {
+  const level = await LocalAuthentication.getEnrolledLevelAsync();
+  return level !== LocalAuthentication.SecurityLevel.NONE;
+}
+
+
+export async function hasBiometricsEnrolled(): Promise<boolean> {
   const hasHardware = await LocalAuthentication.hasHardwareAsync();
   const isEnrolled = await LocalAuthentication.isEnrolledAsync();
   return hasHardware && isEnrolled;

@@ -15,7 +15,7 @@ export enum AppErrorCode {
   BIOMETRIC_FAILED = 'BIOMETRIC_FAILED',
   BIOMETRIC_NOT_AVAILABLE = 'BIOMETRIC_NOT_AVAILABLE',
   SESSION_EXPIRED = 'SESSION_EXPIRED',
-  FORBIDDEN = 'FORBIDDEN', 
+  FORBIDDEN = 'FORBIDDEN',
   UNKNOWN = 'UNKNOWN',
 }
 
@@ -31,9 +31,9 @@ export const ERROR_MESSAGES: Record<AppErrorCode, string> = {
   [AppErrorCode.DUPLICATE_PUNCH]: 'This attendance action was already recorded.',
   [AppErrorCode.INVALID_ATTENDANCE_STATE]: 'This action is not allowed in your current attendance state.',
   [AppErrorCode.BIOMETRIC_FAILED]: 'Biometric verification failed. Please try again.',
-  [AppErrorCode.BIOMETRIC_NOT_AVAILABLE]: 'Biometric authentication is not available on this device.',
+  [AppErrorCode.BIOMETRIC_NOT_AVAILABLE]: 'Please set a screen lock (PIN, pattern, password or fingerprint) in your phone settings to punch in.',
   [AppErrorCode.SESSION_EXPIRED]: 'Your session has expired. Please log in again.',
-    [AppErrorCode.FORBIDDEN]: 'You do not have permission to access this area.',
+  [AppErrorCode.FORBIDDEN]: 'You do not have permission to access this area.',
 
   [AppErrorCode.UNKNOWN]: 'Something went wrong. Please try again.',
 };
