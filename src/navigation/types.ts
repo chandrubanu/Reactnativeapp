@@ -10,4 +10,5 @@ export type RootStackParamList = {
   Login: undefined;
   Main: NavigatorScreenParams<MainTabParamList>;
   AdminDashboard: undefined; // web + super admin only 
+  AdminSettings: undefined;
 };

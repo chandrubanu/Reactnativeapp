@@ -10,6 +10,7 @@ import { useSessionRestore } from '../features/auth/useSessionRestore';
 import { colors } from '../constants/theme';
 import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen';
 import { isSuperAdmin } from '../utils/roles';
+import AdminSettingsScreen from '@/screens/admin/AdminSettingsScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -45,7 +46,16 @@ export default function RootNavigator() {
         {!isAuthenticated ? (
           <Stack.Screen name="Login" component={LoginScreen} />
         ) : showAdminConsole ? (
-          <Stack.Screen name="AdminDashboard" component={AdminDashboardScreen} />
+          <>
+            <Stack.Screen
+              name="AdminDashboard"
+              component={AdminDashboardScreen}
+            />
+            <Stack.Screen
+              name="AdminSettings"
+              component={AdminSettingsScreen}
+            />
+          </>
         ) : (
           <Stack.Screen name="Main" component={MainTabNavigator} />
         )}

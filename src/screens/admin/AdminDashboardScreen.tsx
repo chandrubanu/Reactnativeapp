@@ -54,7 +54,6 @@ function DashboardContent() {
     }
     exportCsv({ officeId, date: todayDate });
   };
-  console.log("query", query)
 
   const carddetails: AdminDashboardCards[] = [
     {

@@ -1,19 +1,20 @@
 import React, { PropsWithChildren } from 'react';
-import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'; 
+import { View, Text, Pressable, ScrollView, StyleSheet, Image } from 'react-native';
 import { useAuth } from '../../features/auth/useAuth';
 import { colors, spacing, typography } from '../../constants/theme';
 import { admin } from './adminTheme';
+import { useNavigation } from '@react-navigation/native';
 
 //type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
 // Only "Settings" is built; the rest are visible but disabled placeholders.
 const NAV: Array<{ label: string; icon: string; enabled: boolean }> = [
   { label: 'Dashboard', icon: 'grid-outline', enabled: true },
-  { label: 'Scheduling', icon: 'calendar-outline', enabled: false },
-  { label: 'Leave Approval', icon: 'checkbox-outline', enabled: false },
+  //{ label: 'Scheduling', icon: 'calendar-outline', enabled: false },
+  // { label: 'Leave Approval', icon: 'checkbox-outline', enabled: false },
   // { label: 'Reports', icon: 'bar-chart-outline', enabled: false },
   // { label: 'Employee Management', icon: 'people-outline', enabled: false },
-  // { label: 'Settings', icon: 'settings-outline', enabled: false },
+  { label: 'Settings', icon: 'settings-outline', enabled: true },
 ];
 
 interface AdminShellProps {
@@ -22,7 +23,23 @@ interface AdminShellProps {
 }
 
 /** Sidebar + top bar layout for the web admin console. */
+//export default function AdminShell({ activeItem, children }) {
 export function AdminShell({ activeItem, pageTitle, children }: PropsWithChildren<AdminShellProps>) {
+  const navigation = useNavigation();
+  const handleNavigation = (label: string) => {
+    switch (label) {
+      case 'Dashboard':
+        navigation.navigate('AdminDashboard' as never);
+        break;
+
+      case 'Settings':
+        navigation.navigate('AdminSettings' as never);
+        break;
+
+      default:
+        break;
+    }
+  };
   const { employee, logout } = useAuth();
 
   return (
@@ -30,13 +47,18 @@ export function AdminShell({ activeItem, pageTitle, children }: PropsWithChildre
       <View style={styles.sidebar}>
         <View style={styles.brandRow}>
           <View style={styles.logo}>
-            {/* <Ionicons name="business" size={18} color="#fff" /> */}
+            <Image
+              source={require('../../../assets/logo.jpg')}
+              style={{ width: '100%', height: 120 }}
+              resizeMode="contain"
+            />
           </View>
           <View>
-            <Text style={styles.brand}>FootPro</Text>
             <Text style={styles.brandSub}>ADMIN CONSOLE</Text>
           </View>
         </View>
+
+
 
         <View style={styles.nav}>
           {NAV.map((item) => {
@@ -45,6 +67,7 @@ export function AdminShell({ activeItem, pageTitle, children }: PropsWithChildre
               <Pressable
                 key={item.label}
                 disabled={!item.enabled}
+                onPress={() => handleNavigation(item.label)}
                 style={[styles.navItem, active && styles.navItemActive, !item.enabled && styles.navDisabled]}
               >
                 {/* <Ionicons name={item.icon} size={18} color={active ? colors.primary : colors.textSecondary} /> */}
@@ -94,8 +117,8 @@ const styles = StyleSheet.create({
     width: 240, backgroundColor: admin.sidebarBg, padding: spacing.md,
     justifyContent: 'space-between', borderRightWidth: 1, borderRightColor: colors.border,
   },
-  brandRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.md },
-  logo: { width: 32, height: 32, borderRadius: 8, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' },
+  brandRow: { flexDirection: 'column', },
+  logo: { borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
   brand: { ...typography.bodyBold, color: colors.primary, fontSize: 17 },
   brandSub: { fontSize: 9, color: colors.textSecondary, letterSpacing: 0.8 },
   nav: { flex: 1, gap: 4, marginTop: spacing.md },
@@ -119,5 +142,5 @@ const styles = StyleSheet.create({
   avatar: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.textPrimary, alignItems: 'center', justifyContent: 'center' },
   avatarText: { color: '#fff', fontWeight: '700' },
   content: { padding: spacing.lg, alignItems: 'center' },
-  contentInner: { width: '100%'  },
+  contentInner: { width: '100%' },
 });

@@ -1,12 +1,14 @@
 {
   "expo": {
     "name": "FootPro",
+    "icon": "./assets/icon.png",
+    "backgroundColor": "#0b0b10",
     "slug": "footpro",
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "footpro",
     "userInterfaceStyle": "light",
-     "experiments": {
+    "experiments": {
       "baseUrl": "/Reactnativeapp"
     },
     "ios": {
@@ -27,7 +29,11 @@
         "android.permission.USE_BIOMETRIC",
         "android.permission.USE_FINGERPRINT"
       ],
-      "package": "com.banuchandar93.footpro"
+      "package": "com.banuchandar93.footpro",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
     },
     "plugins": [
       [
@@ -40,6 +46,15 @@
         "expo-local-authentication",
         {
           "faceIDPermission": "FootPro uses Face ID to verify your identity."
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 240,
+          "resizeMode": "contain",
+          "backgroundColor": "#0b0b10"
         }
       ]
     ],

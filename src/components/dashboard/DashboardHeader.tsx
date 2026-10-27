@@ -12,14 +12,19 @@ export function DashboardHeader({ employeeName, dateLabel, avatarUrl }: Dashboar
   return (
     <View>
       <View style={styles.topRow}>
-        <View style={styles.brandRow}>
+        <Image
+          source={require('../../../assets/logo.png')}
+          style={{ width: 60, height: 35 }}
+          resizeMode="contain"
+        />
+        {/* <View style={styles.brandRow}>
           {avatarUrl ? (
-            <Image source={{ uri: avatarUrl }} style={styles.avatar} />
+            <Image source={require('../../../assets/logo.jpg')} style={styles.avatar} />
           ) : (
             <View style={styles.avatarPlaceholder} />
           )}
           <Text style={styles.brand}>FootPro</Text>
-        </View>
+        </View> */}
       </View>
       <Text style={styles.dateLabel}>{dateLabel}</Text>
       <Text style={styles.greeting}>Good Morning, {employeeName}</Text>
@@ -28,7 +33,7 @@ export function DashboardHeader({ employeeName, dateLabel, avatarUrl }: Dashboar
 }
 
 const styles = StyleSheet.create({
-  topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  topRow: { flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' },
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   avatar: { width: 28, height: 28, borderRadius: 14 },
   avatarPlaceholder: {
