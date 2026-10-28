@@ -48,7 +48,7 @@ export function AdminShell({ activeItem, pageTitle, children }: PropsWithChildre
         <View style={styles.brandRow}>
           <View style={styles.logo}>
             <Image
-              source={require('../../../assets/logo.jpg')}
+              source={require('../../../assets/fulllogo.jpg')}
               style={{ width: '100%', height: 120 }}
               resizeMode="contain"
             />

@@ -284,7 +284,7 @@ export default function LoginScreen() {
               <View className="items-center">
                 <View className="rounded-xl bg-white px-3 py-2">
                   <Image
-                    source={require('../../../assets/logo.jpg')}
+                    source={require('../../../assets/fulllogo.jpg')}
                     style={{ width: 220, height: 64 }}
                     resizeMode="contain"
                   />
