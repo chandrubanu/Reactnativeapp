@@ -16,7 +16,6 @@ import { AdminShell } from '../../components/admin/AdminShell';
 import { ShiftScheduleCard } from '../../components/admin/ShiftScheduleCard';
 import { GeofenceRow } from '../../components/admin/GeofenceRow';
 import { SetCurrentLocationModal } from '../../components/admin/SetCurrentLocationModal';
-import { admin } from '../../components/admin/adminTheme';
 import { AppError, AppErrorCode, ERROR_MESSAGES } from '../../constants/errors';
 import { colors, radii, spacing, typography } from '../../constants/theme';
 import { useNavigation } from '@react-navigation/native';
@@ -173,9 +172,9 @@ function SettingsContent() {
           </View> */}
 
           <View style={styles.section}>
-            <View style={styles.sectionHead}>
-              <View style={[styles.sectionIcon, { backgroundColor: admin.accentOrangeBg }]}>
-                <Ionicons name="location-outline" size={20} color={admin.accentOrange} />
+            <View >
+              <View style={[styles.sectionIcon, { backgroundColor: colors.accentOrangeBg }]}>
+                <Ionicons name="location-outline" size={20} color={colors.accentOrange} />
               </View>
               <View>
                 <Text style={styles.sectionTitle}>Geofencing &amp; GPS Parameters</Text>
@@ -228,7 +227,7 @@ const styles = StyleSheet.create({
   saveBtnDisabled: { backgroundColor: '#A9B6D6' },
   saveText: { color: '#fff', fontWeight: '700', fontSize: 13 },
   message: { marginTop: spacing.sm, fontSize: 13 },
-  section: { backgroundColor: admin.sectionBg, borderRadius: radii.md, padding: spacing.lg, marginTop: spacing.lg, gap: spacing.md },
+  section: { backgroundColor: colors.sectionBg, borderRadius: radii.md, padding: spacing.lg, marginTop: spacing.lg, gap: spacing.md },
   sectionHead: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   sectionIcon: { width: 40, height: 40, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   sectionTitle: { ...typography.bodyBold, color: colors.textPrimary },

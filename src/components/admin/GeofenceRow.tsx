@@ -4,7 +4,6 @@ import { Control, Controller, FieldErrors } from 'react-hook-form';
 import { Ionicons } from '@expo/vector-icons';
 import { AdminSettingsFormValues, toCenterSettings } from '../../validation/adminSettingsSchema';
 import { colors, radii, spacing } from '../../constants/theme';
-import { admin } from './adminTheme';
 import { useSaveCenterSettings } from '@/features/admin/useAdminDashboard';
 import { AppError, AppErrorCode, ERROR_MESSAGES } from '@/constants/errors';
 
@@ -86,12 +85,12 @@ const styles = StyleSheet.create({
   coordBox: { flex: 1, minWidth: 140 },
   coordLabel: { fontSize: 9, fontWeight: '700', color: colors.textSecondary, marginBottom: 3 },
   input: {
-    backgroundColor: admin.inputBg, borderRadius: 4, paddingHorizontal: spacing.sm + 2, paddingVertical: 8,
+    backgroundColor: colors.inputBg, borderRadius: 4, paddingHorizontal: spacing.sm + 2, paddingVertical: 8,
     fontSize: 12, fontFamily: 'monospace', color: colors.textPrimary,
   },
   error: { color: colors.danger, fontSize: 10, marginTop: 2 },
   setBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: admin.inputBg,
+    flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: colors.inputBg,
     paddingHorizontal: spacing.md, paddingVertical: 10, borderRadius: 6,
   },
   setBtnText: { fontSize: 11, fontWeight: '600', color: colors.textSecondary },

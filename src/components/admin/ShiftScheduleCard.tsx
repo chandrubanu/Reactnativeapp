@@ -5,7 +5,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { AdminSettingsFormValues } from '../../validation/adminSettingsSchema';
 import { Card } from '../common/Card';
 import { colors, radii, spacing, typography } from '../../constants/theme';
-import { admin } from './adminTheme';
 
 interface Props {
   index: number;
@@ -57,11 +56,11 @@ const styles = StyleSheet.create({
   card: { flex: 1, minWidth: 220 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   code: { ...typography.bodyBold, color: colors.textPrimary },
-  badge: { backgroundColor: admin.sectionBg, paddingHorizontal: 8, paddingVertical: 3, borderRadius: radii.pill },
+  badge: { backgroundColor: colors.sectionBg, paddingHorizontal: 8, paddingVertical: 3, borderRadius: radii.pill },
   badgeText: { fontSize: 9, fontWeight: '700', color: colors.primary },
   label: { fontSize: 12, fontWeight: '600', color: colors.textPrimary, marginBottom: 4 },
   inputWrap: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: admin.inputBg,
+    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.inputBg,
     borderRadius: 6, paddingHorizontal: spacing.sm + 2,
   },
   input: { flex: 1, paddingVertical: 10, fontSize: 14, color: colors.textPrimary },

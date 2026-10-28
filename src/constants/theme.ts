@@ -10,12 +10,19 @@ export const colors = {
   surface: '#FFFFFF',
   textPrimary: '#141B2D',
   textSecondary: '#80746b',
-  textBrown:'#a52a2a',
+  textBrown: '#a52a2a',
   success: '#1FAE5A',
   warning: '#E0A400',
   danger: '#D9432F',
   border: '#E7EAF3',
   chartTrackLight: '#DCE4FA',
+  pageBg: '#F8F9FF',
+  sectionBg: '#EEF2FF',
+  inputBg: '#DDE3F0',
+  sidebarBg: '#FFFFFF',
+  activeNavBg: '#EEF2FF',
+  accentOrangeBg: '#FFE9DC',
+  accentOrange: '#E8590C',
 };
 
 export const spacing = {

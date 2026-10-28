@@ -38,6 +38,9 @@ export interface CenterSettings {
   longitude: number;
   geofenceRadiusMeters: number; // carried through unchanged by this screen
   gpsAccuracyThresholdMeters: number; // carried through unchanged by this screen
+  workingDays: any,
+  timezone: any,
+  lateGraceMinutes: any
 }
 export interface RecentActivities {
   id: string,

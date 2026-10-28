@@ -21,6 +21,9 @@ const centerSchema = z.object({
   longitude: coord(-180, 180, 'Longitude'),
   geofenceRadiusMeters: z.number(),
   gpsAccuracyThresholdMeters: z.number(),
+  workingDays: z.array(z.number()),
+  timezone: z.string(),
+  lateGraceMinutes: z.number()
 });
 
 export const adminSettingsSchema = z.object({ centers: z.array(centerSchema) });

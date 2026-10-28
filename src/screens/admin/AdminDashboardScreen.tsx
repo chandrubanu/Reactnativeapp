@@ -4,7 +4,6 @@ import { useAuth } from '../../features/auth/useAuth';
 import { useCenterSettings, getDashboardCount, useSaveCenterSettings, useExportAttendanceCsv } from '../../features/admin/useAdminDashboard';
 import { isSuperAdmin } from '../../utils/roles';
 import { AdminShell } from '../../components/admin/AdminShell';
-import { admin } from '../../components/admin/adminTheme';
 import { AppError, AppErrorCode, ERROR_MESSAGES } from '../../constants/errors';
 import { colors, radii, spacing, typography } from '../../constants/theme';
 import { AdminDashboardCards } from '../../types/admin';
@@ -88,35 +87,37 @@ function DashboardContent() {
 
   return (
     <AdminShell activeItem="Dashboard" pageTitle="Dashboard">
-      <View style={styles.headerRow}>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.h1}>Today's Overview</Text>
+      <View  >
+        <View className='my-3' >
+          <Text className='font-semibold color-textPrimary text-[30px]' >Today's Overview</Text>
           <Text style={styles.desc}>
             Welcome Back  {employee?.name}, Real - time attendance summary for {dateLabel}
           </Text>
         </View>
       </View>
-      <View style={styles.headerRow}>
+      <View className='flex-row flex-wrap mb-3 '>
         {carddetails.map((card) => (
-          <View key={`${card.title}-${card.count}`} style={styles.card}>
-            <View style={styles.cardHeader}>
+          <View className="w-1/2 p-1.5  md:w-1/4" key={`${card.title}-${card.count}`} >
+            <View style={styles.card}>
+              <View style={styles.cardHeader}>
 
-              <View style={[styles.iconBox, { backgroundColor: `${colors[card.color]}12` }]}>
-                <Octicons style={styles.icon} name={card.icon} size={20} color={colors[card.color]} />
+                <View style={[styles.iconBox, { backgroundColor: `${colors[card.color]}12` }]}>
+                  <Octicons style={styles.icon} name={card.icon} size={20} color={colors[card.color]} />
+                </View>
+
+                <View style={[styles.badge, { backgroundColor: `${colors[card.color]}12` }]}>
+                  <Text style={[styles.badgeText, { color: colors[card.color] }]} >{card.percentage}</Text>
+                </View>
               </View>
 
-              <View style={[styles.badge, { backgroundColor: `${colors[card.color]}12` }]}>
-                <Text style={[styles.badgeText, { color: colors[card.color] }]} >{card.percentage}</Text>
-              </View>
+              <Text style={styles.count}>{card.count}</Text>
+              <Text style={styles.label}>{card.title}</Text>
             </View>
-
-            <Text style={styles.count}>{card.count}</Text>
-            <Text style={styles.label}>{card.title}</Text>
           </View>
         ))}
       </View>
       <View className="flex-row items-center justify-between"   >
-        <Text style={styles.h1}>Recent Activity</Text>
+        <Text className='font-semibold color-textPrimary text-[20px]'>Recent Activity</Text>
         <Pressable
           className="w-[100px] text-[10px] py-1 rounded-[7px] bg-primary items-center"
           onPress={handlePunch}
@@ -137,8 +138,6 @@ function DashboardContent() {
 const styles = StyleSheet.create({
   denied: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   deniedText: { ...typography.bodyBold, color: colors.danger },
-  headerRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.lg, marginBottom: spacing.md, marginTop: spacing.md, width: '100%', },
-  h1: { ...typography.bodyBold, color: colors.textPrimary },
   desc: { ...typography.body, textTransform: 'capitalize', fontSize: 13, color: colors.textSecondary, marginTop: 6 },
   saveBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.primary,
@@ -147,14 +146,8 @@ const styles = StyleSheet.create({
   saveBtnDisabled: { backgroundColor: '#A9B6D6' },
   saveText: { color: '#fff', fontWeight: '700', fontSize: 13 },
   message: { marginTop: spacing.sm, fontSize: 13 },
-  section: { backgroundColor: admin.sectionBg, borderRadius: radii.md, padding: spacing.lg, marginTop: spacing.lg, gap: spacing.md, flex: 1 },
-  sectionHead: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  sectionIcon: { width: 40, height: 40, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  sectionTitle: { ...typography.bodyBold, color: colors.textPrimary },
-  sectionDesc: { fontSize: 13, color: colors.textSecondary },
   cardsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
   card: {
-    flex: 1,
     minHeight: 174,
     backgroundColor: '#FFFFFF',
     borderRadius: 12,

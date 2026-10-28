@@ -23,6 +23,9 @@ const mapOffice = (v: any): CenterSettings => ({
   longitude: v.longitude,
   geofenceRadiusMeters: v.radiusMeters ?? 100,
   gpsAccuracyThresholdMeters: v.gpsAccuracyThresholdMeters ?? 40,
+  workingDays: v.workingDays,
+  timezone: v.timezone,
+  lateGraceMinutes: v.lateGraceMinutes
 });
 
 export interface IAdminSettingsRepository {
@@ -110,14 +113,7 @@ class MockAdminSettingsRepository implements IAdminSettingsRepository {
     if (!response || !Array.isArray(response)) {
       throw new Error('Failed to fetch recent activities');
     }
-
-    console.log("response", response.map((values: any) => ({
-      centerId: values.id, centerCode: values.name, locationLabel: values.name,
-      isActive: true, shiftStart: '09:00', shiftEnd: '18:00',
-      latitude: values.latitude, longitude: values.longitude, geofenceRadiusMeters: values.radiusMeters, gpsAccuracyThresholdMeters: 40,
-    })))
     return response.map((values: any) => ({
-
       centerId: String(values.id),
       centerCode: values.code ?? values.name,
       locationLabel: values.name,
@@ -128,6 +124,9 @@ class MockAdminSettingsRepository implements IAdminSettingsRepository {
       longitude: values.longitude,
       geofenceRadiusMeters: values.radiusMeters ?? 100,
       gpsAccuracyThresholdMeters: values.gpsAccuracyThresholdMeters ?? 40,
+      workingDays: values.workingDays,
+      timezone: values.timezone,
+      lateGraceMinutes: values.lateGraceMinutes
     }))
   }
 
@@ -158,9 +157,9 @@ class MockAdminSettingsRepository implements IAdminSettingsRepository {
       latitude: Number(center.latitude),
       longitude: Number(center.longitude),
       radiusMeters: center.geofenceRadiusMeters,
-      timezone: 'Asia/Kolkata',
-      workingDays: [1, 2, 3, 4, 5],
-      lateGraceMinutes: 15,
+      timezone: center.timezone,
+      workingDays: center.workingDays,
+      lateGraceMinutes: center.lateGraceMinutes,
     };
     const response = await authFetch<CenterSettings>(
       '/api/admin/offices/' + center.centerId,
