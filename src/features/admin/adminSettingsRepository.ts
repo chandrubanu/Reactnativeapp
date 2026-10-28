@@ -4,6 +4,26 @@ import { Employee } from '../../types/employee';
 import { AppError, AppErrorCode } from '../../constants/errors';
 import { isSuperAdmin } from '../../utils/roles';
 import { authFetch } from '@/api/apiClient';
+import { Alert, Platform } from 'react-native';
+const showAlert = (title: string, message: string) => {
+  if (Platform.OS === 'web') {
+    window.alert(`${title}: ${message}`);
+  } else {
+    Alert.alert(title, message);
+  }
+};
+const mapOffice = (v: any): CenterSettings => ({
+  centerId: String(v.id),
+  centerCode: v.code ?? v.name,
+  locationLabel: v.name,
+  isActive: v.isActive ?? true,
+  shiftStart: v.shiftStart ?? '09:00',
+  shiftEnd: v.shiftEnd ?? '18:00',
+  latitude: v.latitude,
+  longitude: v.longitude,
+  geofenceRadiusMeters: v.radiusMeters ?? 100,
+  gpsAccuracyThresholdMeters: v.gpsAccuracyThresholdMeters ?? 40,
+});
 
 export interface IAdminSettingsRepository {
   getCenterSettings(actor: Employee): Promise<CenterSettings[]>;
@@ -132,36 +152,38 @@ class MockAdminSettingsRepository implements IAdminSettingsRepository {
     centers: CenterSettings[]
   ): Promise<CenterSettings[]> {
     const center = centers[0];
+
     const centerpayloadval = {
       name: center.locationLabel,
       latitude: Number(center.latitude),
       longitude: Number(center.longitude),
       radiusMeters: center.geofenceRadiusMeters,
-      timezone: 'Asia/Kolkata'
+      timezone: 'Asia/Kolkata',
+      workingDays: [1, 2, 3, 4, 5],
+      lateGraceMinutes: 15,
     };
     const response = await authFetch<CenterSettings>(
       '/api/admin/offices/' + center.centerId,
       {
-        method: 'PUT',
+        method: 'POST',
         body: JSON.stringify(centerpayloadval),
       }
     );
 
-    if (!response || !Array.isArray(response)) {
-      throw new Error('Failed to save center settings');
+    // API may return an array, a single object, or nothing (204)
+    let result: CenterSettings[];
+    if (Array.isArray(response)) {
+      result = response.map(mapOffice);
+    } else if (response && typeof response === 'object') {
+      result = [mapOffice(response)];
+    } else {
+      result = centers; // nothing returned: keep what the user submitted
     }
-    return response.map((values: any) => ({
-      centerId: String(values.id),
-      centerCode: values.code ?? values.name,
-      locationLabel: values.name,
-      isActive: values.isActive ?? true,
-      shiftStart: values.shiftStart ?? '09:00',
-      shiftEnd: values.shiftEnd ?? '18:00',
-      latitude: values.latitude,
-      longitude: values.longitude,
-      geofenceRadiusMeters: values.radiusMeters ?? 100,
-      gpsAccuracyThresholdMeters: values.gpsAccuracyThresholdMeters ?? 40,
-    }));
+    showAlert('Success', 'Center settings saved successfully.');
+    return result;
+  } catch(e: any) {
+    showAlert('Error', e?.message ?? 'Failed to save center settings.');
+    throw e; // let the caller stop its loading state
   }
 
   // ── Mobile app read-only (no role guard) ─────────────────────────────────
