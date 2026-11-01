@@ -4,14 +4,7 @@ import { Employee } from '../../types/employee';
 import { AppError, AppErrorCode } from '../../constants/errors';
 import { isSuperAdmin } from '../../utils/roles';
 import { authFetch } from '@/api/apiClient';
-import { Alert, Platform } from 'react-native';
-const showAlert = (title: string, message: string) => {
-  if (Platform.OS === 'web') {
-    window.alert(`${title}: ${message}`);
-  } else {
-    Alert.alert(title, message);
-  }
-};
+import { toast } from '@/utils/toast';
 const mapOffice = (v: any): CenterSettings => ({
   centerId: String(v.id),
   centerCode: v.code ?? v.name,
@@ -161,28 +154,36 @@ class MockAdminSettingsRepository implements IAdminSettingsRepository {
       workingDays: center.workingDays,
       lateGraceMinutes: center.lateGraceMinutes,
     };
-    const response = await authFetch<CenterSettings>(
-      '/api/admin/offices/' + center.centerId,
-      {
-        method: 'POST',
-        body: JSON.stringify(centerpayloadval),
-      }
-    );
 
-    // API may return an array, a single object, or nothing (204)
-    let result: CenterSettings[];
-    if (Array.isArray(response)) {
-      result = response.map(mapOffice);
-    } else if (response && typeof response === 'object') {
-      result = [mapOffice(response)];
-    } else {
-      result = centers; // nothing returned: keep what the user submitted
+    try {
+      const isNew = !center.centerId;
+
+      const response = await authFetch<CenterSettings>(
+        isNew
+          ? '/api/admin/offices'
+          : '/api/admin/offices/' + center.centerId,
+        {
+          method: isNew ? 'POST' : 'POST',
+          body: JSON.stringify(centerpayloadval),
+        }
+      );
+
+      // API may return an array, a single object, or nothing (204)
+      let result: CenterSettings[];
+      if (Array.isArray(response)) {
+        result = response.map(mapOffice);
+      } else if (response && typeof response === 'object') {
+        result = [mapOffice(response)];
+      } else {
+        result = centers; // nothing returned: keep what the user submitted
+      }
+
+      toast.success('Saved', 'Center settings saved successfully.');
+      return result;
+    } catch (e: any) {
+      toast.error('Save failed', e?.message ?? 'Failed to save center settings.');
+      throw e; // let the caller stop its loading state
     }
-    showAlert('Success', 'Center settings saved successfully.');
-    return result;
-  } catch(e: any) {
-    showAlert('Error', e?.message ?? 'Failed to save center settings.');
-    throw e; // let the caller stop its loading state
   }
 
   // ── Mobile app read-only (no role guard) ─────────────────────────────────

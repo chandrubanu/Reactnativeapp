@@ -1,12 +1,19 @@
 
-import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useGetAllActivities } from '@/features/admin/useAdminDashboard';
 import { colors } from '@/constants/theme';
+import { AssignOfficeModal } from './AssignOfficeModal';
+
+interface SelectedEmployee {
+  id: string;
+  name: string;
+  officeid?: number
+}
 
 export default function AdminRecentActivities() {
- const todayDate =  useMemo(
+  const todayDate = useMemo(
     () => new Date().toISOString().split('T')[0],
     [],
   );
@@ -15,6 +22,8 @@ export default function AdminRecentActivities() {
     isLoading,
     isError,
   } = useGetAllActivities(todayDate);
+
+  const [selected, setSelected] = useState<SelectedEmployee | null>(null);
 
   if (isLoading) {
     return (
@@ -44,96 +53,105 @@ export default function AdminRecentActivities() {
 
   return (
     <View style={styles.container}>
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      style={styles.scrollView}   contentContainerStyle={styles.scrollContent}>
-      <View style={styles.table}>
-        <View style={[styles.row, styles.header]}>
-          <Text style={[styles.heading, styles.employeeCol]}>
-            EMPLOYEE
-          </Text>
-          <Text style={[styles.heading, styles.statusCol]}>
-            STATUS
-          </Text>
-          <Text style={[styles.heading, styles.timeCol]}>
-            PUNCH-IN TIME
-          </Text>
-          <Text style={[styles.heading, styles.departmentCol]}>
-            DEPARTMENT
-          </Text>
-          <Text style={[styles.heading, styles.actionCol]}>
-            ACTIONS
-          </Text>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <View style={styles.table}>
+          {/* ── Header ─────────────────────────────────────────────── */}
+          <View style={[styles.row, styles.header]}>
+            <Text style={[styles.heading, styles.employeeCol]}>EMPLOYEE</Text>
+            <Text style={[styles.heading, styles.statusCol]}>STATUS</Text>
+            <Text style={[styles.heading, styles.timeCol]}>PUNCH-IN TIME</Text>
+            <Text style={[styles.heading, styles.departmentCol]}>DEPARTMENT</Text>
+            <Text style={[styles.heading, styles.actionCol]}>ACTIONS</Text>
+          </View>
+
+          {/* ── Rows ───────────────────────────────────────────────── */}
+          {
+            employees.map((employee) => {
+              const statusStyle =
+                employee.status === 'ABSENT'
+                  ? styles.late
+                  : employee.status === 'ON_TIME'
+                    ? styles.onTime
+                    : styles.permission;
+              const statusStyletransparent =
+                employee.status === 'ABSENT'
+                  ? styles.latetransparent
+                  : employee.status === 'ON_TIME'
+                    ? styles.onTimetransparent
+                    : styles.permissiontransparent;
+
+              return (
+                <View
+                  key={employee.id}
+                  style={[styles.row, styles.dataRow]}
+                >
+                  {/* Employee */}
+                  <View style={[styles.employeeCol, styles.employeeInfo]}>
+                    <View style={styles.avatar}>
+                      <Text style={styles.avatarText}>{employee.avatar}</Text>
+                    </View>
+                    <View style={styles.employeeDetails}>
+                      <Text style={styles.employeeName}>{employee.name}</Text>
+                      <Text style={styles.employeeId}>Emp ID: #{employee.id}</Text>
+                    </View>
+                  </View>
+
+                  {/* Status badge */}
+                  <View style={styles.statusCol}>
+                    <View style={[styles.badge, statusStyletransparent]}>
+                      <Text style={[styles.badgeText, statusStyle]}>{employee.status}</Text>
+                    </View>
+                  </View>
+
+                  {/* Punch-in */}
+                  <Text style={[styles.cell, styles.timeCol]}>
+                    {employee.punchIn || '---'}
+                  </Text>
+
+                  {/* Department */}
+                  <Text numberOfLines={1} style={[styles.cell, styles.departmentCol]}>
+                    {employee.department}
+                  </Text>
+
+                  {/* ── Actions ─────────────────────────────────────── */}
+                  <View style={[styles.actionCol, styles.actionCell]}>
+                    <Pressable
+                      hitSlop={8}
+                      onPress={() =>
+                        setSelected({ id: employee.id, name: employee.name, officeid: employee.officeId })
+                      }
+                      style={({ pressed }) => [
+                        styles.actionBtn,
+                        pressed && styles.actionBtnPressed,
+                      ]}
+                      accessibilityLabel={`Actions for ${employee.name}`}
+                    >
+                      <Ionicons name="location-outline" size={17} color={colors.primary} />
+                    </Pressable>
+                  </View>
+                </View>
+              );
+            })}
         </View>
+      </ScrollView>
 
-        {employees.map((employee) => {
-          const statusStyle =
-            employee.status === 'ABSENT'
-              ? styles.late
-              : employee.status === 'ON_TIME'
-                ? styles.onTime
-                : styles.permission;
-                const statusStyletransparent =
-            employee.status === 'ABSENT'
-              ? styles.latetransparent
-              : employee.status === 'ON_TIME'
-                ? styles.onTimetransparent
-                : styles.permissiontransparent;
-
-          return (
-            <View
-              key={employee.id}
-              style={[styles.row, styles.dataRow]}
-            >
-              <View style={[styles.employeeCol, styles.employeeInfo]}>
-                <View style={styles.avatar}>
-                  <Text style={styles.avatarText}>
-                    {employee.avatar}
-                  </Text>
-                </View>
-
-                <View style={styles.employeeDetails}>
-                  <Text style={styles.employeeName}>
-                    {employee.name}
-                  </Text>
-                  <Text style={styles.employeeId}>
-                    Emp ID: #{employee.id}
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.statusCol}>
-                <View style={[styles.badge, statusStyletransparent]}>
-                  <Text style={[styles.badgeText, statusStyle]}>
-                    {employee.status}
-                  </Text>
-                </View>
-              </View>
-
-              <Text style={[styles.cell, styles.timeCol]}>
-                {employee.punchIn || '---'}
-              </Text>
-
-              <Text
-                numberOfLines={1}
-                style={[styles.cell, styles.departmentCol]}
-              >
-                {employee.department}
-              </Text>
-
-              <View style={[styles.actionCol, styles.actionCell]}>
-                <Ionicons
-                  name="ellipsis-vertical"
-                  size={18}
-                  color="#172554"
-                />
-              </View>
-            </View>
-          );
-        })}
-      </View>
-    </ScrollView>
+      {/* ── Assign Office Modal ───────────────────────────────────────── */}
+      {
+        selected && (
+          <AssignOfficeModal
+            visible={!!selected}
+            employeeId={selected.id}
+            employeeName={selected.name}
+            officeId={selected.officeid}
+            onClose={() => setSelected(null)}
+          />
+        )
+      }
     </View>
   );
 }
@@ -147,24 +165,25 @@ const styles = StyleSheet.create({
   },
 
   scrollView: {
-    width: '100%', 
+    width: '100%',
   },
 
   scrollContent: {
     flexGrow: 1,
-    marginTop:15
+    marginTop: 15,
   },
 
-messageContainer: {
-  padding: 20,
-  alignItems: 'center',
-  justifyContent: 'center',
-},
+  messageContainer: {
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 
-employeeDetails: {
-  flex: 1,
-  minWidth: 0,
-},
+  employeeDetails: {
+    flex: 1,
+    minWidth: 0,
+  },
+
   table: {
     width: '100%',
     minWidth: 850,
@@ -180,8 +199,8 @@ employeeDetails: {
   },
 
   header: {
-    minHeight: 47, 
-    paddingHorizontal:5
+    minHeight: 47,
+    paddingHorizontal: 5,
   },
 
   heading: {
@@ -194,31 +213,15 @@ employeeDetails: {
   dataRow: {
     minHeight: 55,
     backgroundColor: '#FFFFFF',
-    borderRadius: 10, 
-    paddingHorizontal:5
+    borderRadius: 10,
+    paddingHorizontal: 5,
   },
 
-  employeeCol: {
-    width: 190,
-  },
-
-  statusCol: {
-    width: 170,
-  },
-
-  timeCol: {
-    width: 190,
-  },
-
-  departmentCol: {
-    width: 240,
-    paddingRight: 12,
-  },
-
-  actionCol: {
-    width: 55,
-    alignItems: 'center',
-  },
+  employeeCol: { width: 190 },
+  statusCol: { width: 170 },
+  timeCol: { width: 190 },
+  departmentCol: { width: 240, paddingRight: 12 },
+  actionCol: { width: 55, alignItems: 'center' },
 
   employeeInfo: {
     flexDirection: 'row',
@@ -235,9 +238,7 @@ employeeDetails: {
     justifyContent: 'center',
   },
 
-  avatarText: {
-    fontSize: 17,
-  },
+  avatarText: { fontSize: 17 },
 
   employeeName: {
     fontSize: 12,
@@ -264,35 +265,30 @@ employeeDetails: {
   },
 
   badgeText: {
-    fontSize: 10, 
-    fontWeight:500,
-    textTransform:'capitalize'
+    fontSize: 10,
+    fontWeight: '500',
+    textTransform: 'capitalize',
   },
 
-  onTime: {
-    color: colors.primary,
-  },
+  onTime: { color: colors.primary },
+  late: { color: colors.danger },
+  permission: { color: colors.textSecondary },
 
-  late: {
-    color:  colors.danger,
-  },
+  onTimetransparent: { backgroundColor: colors.primary + '20' },
+  latetransparent: { backgroundColor: colors.danger + '20' },
+  permissiontransparent: { backgroundColor: colors.textSecondary + '20' },
 
-  permission: {
-    color: colors.textSecondary,
-  },
-   onTimetransparent: {
-    backgroundColor: colors.primary+'20',
-  },
+  actionCell: { justifyContent: 'center' },
 
-  latetransparent: {
-    backgroundColor:  colors.danger+'20',
-  },
-
-  permissiontransparent: {
-    backgroundColor: colors.textSecondary+'20',
-  },
-
-  actionCell: {
+  actionBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: colors.primaryLight,
+    alignItems: 'center',
     justifyContent: 'center',
+  },
+  actionBtnPressed: {
+    backgroundColor: colors.primary + '30',
   },
 });

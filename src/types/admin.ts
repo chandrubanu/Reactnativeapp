@@ -43,12 +43,14 @@ export interface CenterSettings {
   lateGraceMinutes: any
 }
 export interface RecentActivities {
+  officeId: number | undefined;
   id: string,
   name: string,
   status: string,
   punchIn: string,
   department: string,
   avatar: '👨🏻‍💼',
+
 }
 
 export interface AdminDashboardCards {

@@ -12,6 +12,7 @@ import {
 import { useAuth } from '../../features/auth/useAuth';
 import { colors, spacing, typography } from '../../constants/theme';
 import { useNavigation } from '@react-navigation/native';
+import { Toast } from '../ui/Toast';
 
 const NAV: Array<{ label: string; icon: string; enabled: boolean }> = [
   { label: 'Dashboard', icon: 'grid-outline', enabled: true },
@@ -202,6 +203,9 @@ export function AdminShell({
           </View>
         </ScrollView>
       </View>
+
+      {/* Global toast overlay — sits above everything */}
+      <Toast />
     </View>
   );
 }

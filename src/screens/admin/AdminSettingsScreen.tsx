@@ -46,7 +46,26 @@ function SettingsContent() {
       resolver: zodResolver(adminSettingsSchema),
       defaultValues: { centers: [] },
     });
-  const { fields } = useFieldArray({ control, name: 'centers' });
+  const { fields, append } = useFieldArray({ control, name: 'centers' });
+
+  const handleAddNew = () => {
+    append({
+      centerId: '',
+      centerCode: '',
+      locationLabel: '',
+      isActive: true,
+      shiftStart: '09:00',
+      shiftEnd: '18:00',
+      latitude: '',
+      longitude: '',
+      geofenceRadiusMeters: 50,
+      gpsAccuracyThresholdMeters: 50,
+      workingDays: [1, 2, 3, 4, 5],
+      timezone: 'Asia/Kolkata',
+      lateGraceMinutes: 15,
+      isNew: true
+    } as any);
+  };
 
   // Load server data into the form (and re-sync after a successful save).
   useEffect(() => {
@@ -184,6 +203,7 @@ function SettingsContent() {
             <View style={{ gap: spacing.sm }}>
               {fields.map((f, i) => {
                 const isRowDirty = !!dirtyFields.centers?.[i];
+                const isLastRow = i === fields.length - 1;
                 return (<GeofenceRow
                   key={f.id}
                   index={i}
@@ -195,6 +215,8 @@ function SettingsContent() {
                   onSaveRow={onSaveRow}
                   isSaving={savingIndex === i}
                   isDirty={isRowDirty}
+                  isNew={!f.centerId}
+                  onAddNew={isLastRow ? handleAddNew : undefined}
                 />)
               })}
             </View>

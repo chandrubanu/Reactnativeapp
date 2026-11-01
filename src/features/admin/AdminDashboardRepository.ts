@@ -19,24 +19,20 @@ export interface IAdminDashboardRepository {
   getAllRecentActivities(todayDate: string): Promise<RecentActivities[]>;
   /** Download attendance CSV for the given office + date. Triggers a browser file download. */
   exportAttendanceCsv(officeId: string, date: string, search?: string): Promise<void>;
+  /** Assign an employee to an office — POST /api/admin/employees/:employeeId/office */
+  assignOffice(employeeId: string, officeId: number): Promise<void>;
+  /** Fetch all offices (no role guard needed for dropdown population) */
+  getAllOffices(): Promise<CenterSettings[]>;
 }
 
 // ─── Center (location + geofence) data ───────────────────────────────────────
 let centerDb: CenterSettings[] = [
   {
-    centerId: 'CHN001', centerCode: 'CHN', locationLabel: 'Chennai Fulfillment Center',
-    isActive: true, shiftStart: '12:00', shiftEnd: '18:00',
-    latitude: 12.9716, longitude: 77.5946, geofenceRadiusMeters: 100, gpsAccuracyThresholdMeters: 40,
-  },
-  {
-    centerId: 'BLR001', centerCode: 'BLR', locationLabel: 'Bengaluru Fulfillment Center',
-    isActive: true, shiftStart: '12:30', shiftEnd: '17:30',
-    latitude: 12.9716, longitude: 77.5946, geofenceRadiusMeters: 75, gpsAccuracyThresholdMeters: 35,
-  },
-  {
     centerId: 'VLR001', centerCode: 'VLR', locationLabel: 'Villiyanur Fulfillment Center',
     isActive: true, shiftStart: '12:00', shiftEnd: '18:00',
-    latitude: 11.9124222, longitude: 79.7625928, geofenceRadiusMeters: 200, gpsAccuracyThresholdMeters: 200,
+    latitude: 11.9124222, longitude: 79.7625928, geofenceRadiusMeters: 200, gpsAccuracyThresholdMeters: 200, workingDays: undefined,
+    timezone: undefined,
+    lateGraceMinutes: undefined
   },
 ];
 
@@ -142,6 +138,7 @@ class MockAdminDashboardRepository implements IAdminDashboardRepository {
     const users = response.items;
 
     return users.map((user: any) => ({
+      officeId: user.officeId,
       id: String(user.employeeId),
       name: user.employeeName,
       avatar: '👨🏻‍💼',
@@ -201,6 +198,36 @@ class MockAdminDashboardRepository implements IAdminDashboardRepository {
     anchor.click();
     document.body.removeChild(anchor);
     URL.revokeObjectURL(url);
+  }
+
+  async getAllOffices(): Promise<CenterSettings[]> {
+    const response: any = await authFetch<CenterSettings>(`/api/admin/offices`);
+    if (!response || !Array.isArray(response)) return [];
+    return response.map((v: any) => ({
+      centerId: String(v.id),
+      centerCode: v.code ?? v.name,
+      locationLabel: v.name,
+      isActive: v.isActive ?? true,
+      shiftStart: v.shiftStart ?? '09:00',
+      shiftEnd: v.shiftEnd ?? '18:00',
+      latitude: v.latitude,
+      longitude: v.longitude,
+      geofenceRadiusMeters: v.radiusMeters ?? 100,
+      gpsAccuracyThresholdMeters: v.gpsAccuracyThresholdMeters ?? 40,
+      workingDays: v.workingDays,
+      timezone: v.timezone,
+      lateGraceMinutes: v.lateGraceMinutes,
+    }));
+  }
+
+  async assignOffice(employeeId: string, officeId: number): Promise<void> {
+    await authFetch<void>(
+      `/api/admin/employees/${employeeId}/office`,
+      {
+        method: 'PUT',
+        body: JSON.stringify({ officeId }),
+      }
+    );
   }
 }
 
