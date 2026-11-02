@@ -1,0 +1,88 @@
+// app.config.js — dynamic Expo config
+// Controls baseUrl at build time via the BASE_URL environment variable:
+//
+//   GitHub Pages  →  BASE_URL=/Reactnativeapp  npm run deploy
+//   Custom domain →  BASE_URL=               npm run deploy:domain
+//
+// If BASE_URL is not set, defaults to /Reactnativeapp (safe for local dev / gh-pages).
+
+const baseUrl = process.env.BASE_URL !== undefined
+  ? process.env.BASE_URL          // "" for custom domain, "/Reactnativeapp" for gh-pages
+  : '/Reactnativeapp';            // default
+
+module.exports = {
+  expo: {
+    name: 'FootPro',
+    icon: './assets/icon.png',
+    backgroundColor: '#0b0b10',
+    slug: 'footpro',
+    version: '1.0.0',
+    orientation: 'portrait',
+    scheme: 'footpro',
+    userInterfaceStyle: 'light',
+    experiments: {
+      baseUrl,                    // ← driven by env var
+    },
+    ios: {
+      supportsTablet: false,
+      infoPlist: {
+        NSLocationWhenInUseUsageDescription:
+          'FootPro needs your location to verify you are at an authorized work location before allowing punch in/out.',
+        NSFaceIDUsageDescription:
+          'FootPro uses Face ID to securely verify your identity for attendance actions.',
+      },
+    },
+    android: {
+      permissions: [
+        'ACCESS_FINE_LOCATION',
+        'ACCESS_COARSE_LOCATION',
+        'USE_BIOMETRIC',
+        'USE_FINGERPRINT',
+        'android.permission.ACCESS_COARSE_LOCATION',
+        'android.permission.ACCESS_FINE_LOCATION',
+        'android.permission.USE_BIOMETRIC',
+        'android.permission.USE_FINGERPRINT',
+      ],
+      package: 'com.banuchandar93.footpro',
+      adaptiveIcon: {
+        foregroundImage: './assets/adaptive-icon.png',
+        backgroundColor: '#FFFFFF',
+      },
+    },
+    plugins: [
+      [
+        'expo-location',
+        {
+          locationWhenInUsePermission:
+            'FootPro needs your location to verify your attendance location.',
+        },
+      ],
+      [
+        'expo-local-authentication',
+        {
+          faceIDPermission: 'FootPro uses Face ID to verify your identity.',
+        },
+      ],
+      [
+        'expo-splash-screen',
+        {
+          image: './assets/splash-icon.png',
+          imageWidth: 240,
+          resizeMode: 'contain',
+          backgroundColor: '#0b0b10',
+        },
+      ],
+    ],
+    web: {
+      bundler: 'metro',
+      output: 'single',
+      favicon: './assets/favicon.png',
+    },
+    extra: {
+      eas: {
+        projectId: '03506b56-9572-4632-a36e-e40959e15855',
+      },
+    },
+  },
+};
+

@@ -5,6 +5,7 @@ import { AppError, AppErrorCode } from '../../constants/errors';
 import { isSuperAdmin } from '../../utils/roles';
 import { authFetch, BASE_URL } from '@/api/apiClient';
 import { useSessionStore } from '../../store/sessionStore';
+import { formatDateTime } from '@/utils/dateformat';
 
 export interface IAdminDashboardRepository {
   getDashboardCount(dateLabel: string): Promise<DashboardResponse>;
@@ -143,13 +144,7 @@ class MockAdminDashboardRepository implements IAdminDashboardRepository {
       name: user.employeeName,
       avatar: '👨🏻‍💼',
       status: user.status,
-      punchIn: user.punchInTime ? new Date(user.punchInTime)
-        .toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-          timeZone: 'UTC',
-        }).replace(/\//g, '-') : '- - -',
+      punchIn: formatDateTime(user.punchInTime),
       department: user.department,
     }));
   }

@@ -9,6 +9,7 @@ import { colors, radii, spacing, typography } from '../../constants/theme';
 import { AdminDashboardCards } from '../../types/admin';
 import { Octicons } from '@expo/vector-icons';
 import AdminRecentActivities from '@/components/admin/AdminRecentActivities';
+import { formatDate } from '@/utils/dateformat';
 
 export default function AdminDashboardScreen() {
   const { employee } = useAuth();
@@ -33,17 +34,7 @@ function DashboardContent() {
   const { data: query, isLoading, isError } = getDashboardCount(todayDate);
   const overview = query?.overview;
   const { employee } = useAuth();
-  const dateLabel = useMemo(
-    () =>
-      new Date()
-        .toLocaleDateString('en-US', {
-          weekday: 'long',
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
-        }),
-    [],
-  );
+  const dateLabel = formatDate(new Date())
 
   const handlePunch = () => {
     const officeId = employee?.office?.centerId;

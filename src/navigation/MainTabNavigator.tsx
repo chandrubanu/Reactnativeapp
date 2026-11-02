@@ -5,10 +5,12 @@ import { MainTabParamList } from './types';
 import DashboardScreen from '../screens/dashboard/DashboardScreen';
 import { colors } from '../constants/theme';
 import { Platform, View, Text, StyleSheet } from 'react-native';
+import { useAuth } from '@/features/auth/useAuth';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 const hideScreenBrowser = Platform.OS === 'web';
 function NotAuthorizedScreen() {
+  const { logout } = useAuth();
   return (
     <View style={styles.container}>
       <Ionicons
@@ -20,6 +22,7 @@ function NotAuthorizedScreen() {
       <Text style={styles.message}>
         You are not authorized to access this page.
       </Text>
+      <Text className='text-red-700 text-md mt-3' onPress={logout} > Log out </Text>
     </View>
   );
 }

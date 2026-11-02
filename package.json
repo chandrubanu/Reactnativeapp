@@ -9,8 +9,13 @@
     "test": "jest",
     "lint": "eslint . --ext .ts,.tsx",
     "web": "expo start --web",
-    "predeploy": "npx expo export --platform web --clear",
-    "deploy": "gh-pages --nojekyll -d dist"
+    "build:github": "node scripts/build-web.js github",
+    "build:domain": "node scripts/build-web.js domain",
+    "build:root": "node scripts/build-web.js root",
+    "predeploy": "npm run build:github",
+    "deploy": "gh-pages --nojekyll -d dist",
+    "predeploy:domain": "npm run build:domain",
+    "deploy:domain": "gh-pages --nojekyll -d dist-domain -b gh-pages-domain"
   },
   "dependencies": {
     "@expo/metro-runtime": "~57.0.17",
