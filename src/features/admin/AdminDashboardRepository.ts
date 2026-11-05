@@ -6,6 +6,7 @@ import { isSuperAdmin } from '../../utils/roles';
 import { authFetch, BASE_URL } from '@/api/apiClient';
 import { useSessionStore } from '../../store/sessionStore';
 import { formatDateTime } from '@/utils/dateformat';
+import { useMemo } from 'react';
 
 export interface IAdminDashboardRepository {
   getDashboardCount(dateLabel: string): Promise<DashboardResponse>;
@@ -161,18 +162,24 @@ class MockAdminDashboardRepository implements IAdminDashboardRepository {
 
   async exportAttendanceCsv(officeId: string, date: string, search?: string): Promise<void> {
     const token = useSessionStore.getState().token;
-
+    const { todayMonth, todayYear } = useMemo(() => {
+      const today = new Date();
+      return {
+        todayMonth: today.getMonth() + 1,
+        todayYear: today.getFullYear(),
+      };
+    }, []);
     // Build query string with required params
     const params = new URLSearchParams({ officeId, date });
+    const monthyear = (todayYear + '-' + todayMonth).toString();
     if (search?.trim()) params.set('search', search.trim());
 
-    // Must use raw fetch — authFetch always sends Accept: application/json
-    // which causes the server to return 406 Not Acceptable for CSV endpoints.
     const { BASE_URL: baseUrl } = await import('@/api/apiClient');
-    const response = await fetch(`${baseUrl}/api/admin/activity/export?${params.toString()}`, {
+    const response = await fetch(`${baseUrl}/api/admin/reports/attendance.xlsx?month=` + monthyear, {
       method: 'GET',
       headers: {
-        Accept: 'text/csv',
+        Accept:
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
@@ -181,14 +188,11 @@ class MockAdminDashboardRepository implements IAdminDashboardRepository {
     if (response.status === 403) throw new AppError(AppErrorCode.FORBIDDEN);
     if (!response.ok) throw new AppError(AppErrorCode.SERVER_ERROR);
 
-    const csvText = await response.text();
-
-    // Trigger browser file download
-    const blob = new Blob([csvText], { type: 'text/csv;charset=UTF-8' });
+    const blob = await response.blob();
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = 'attendance.csv';
+    anchor.download = `attendance-${monthyear}.xlsx`;
     document.body.appendChild(anchor);
     anchor.click();
     document.body.removeChild(anchor);
