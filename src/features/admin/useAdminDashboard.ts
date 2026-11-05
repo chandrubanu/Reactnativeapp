@@ -12,10 +12,10 @@ export function useCenterSettings() {
     enabled: isSuperAdmin(employee), // never even fire the request for non-admins
   });
 }
-export function getDashboardCount(dateLabel:string) {
+export function getDashboardCount(dateLabel: string) {
   const employee = useSessionStore((s) => s.employee);
   return useQuery({
-    queryKey: ['getDashboardCount'],
+    queryKey: ['getDashboardCount', dateLabel],
     queryFn: () => AdminDashboardRepository.getDashboardCount(dateLabel),
     enabled: isSuperAdmin(employee), // never even fire the request for non-admins
   });
@@ -34,7 +34,7 @@ export function useSaveCenterSettings() {
 
 
 
-export function useGetAllActivities(todayDate:string) {
+export function useGetAllActivities(todayDate: string) {
   const employee = useSessionStore((s) => s.employee);
   return useQuery({
     queryKey: ['admingetAllRecentActivities'],
@@ -46,8 +46,8 @@ export function useGetAllActivities(todayDate:string) {
 /** Triggers GET /api/admin/activity/export and downloads the CSV file. */
 export function useExportAttendanceCsv() {
   return useMutation({
-    mutationFn: ({ officeId, date, search }: { officeId: string; date: string; search?: string }) =>
-      AdminDashboardRepository.exportAttendanceCsv(officeId, date, search),
+    mutationFn: ({ officeId, date, month, year, search }: { officeId: string; date: string; month: number, year: number, search?: string }) =>
+      AdminDashboardRepository.exportAttendanceCsv(officeId, date, month, year, search),
   });
 }
 

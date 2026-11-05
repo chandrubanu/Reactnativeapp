@@ -8,12 +8,29 @@ import { AppError, AppErrorCode } from '../constants/errors';
 export { BASE_URL };
 
 /**
+ * Force-logout helper — clears session + secure storage imperatively.
+ * Safe to call from outside React (repositories, apiClient).
+ */
+function forceLogout() {
+  // Clear Zustand session — RootNavigator watches isAuthenticated and will
+  // immediately swap to the Login screen without any manual navigation.
+  useSessionStore.getState().clearSession();
+
+  // Also wipe the persisted token so the next app boot doesn't restore it.
+  // Imported lazily to avoid circular deps.
+  import('../storage/secureStorage').then(({ secureStorage }) => {
+    secureStorage.clear().catch(() => {});
+  });
+}
+
+/**
  * Authenticated fetch wrapper.
  *
  * - Automatically reads the JWT token from Zustand sessionStore and
  *   injects it as `Authorization: Bearer <token>` on every request.
  * - You can override / add extra headers via `options.headers`.
  * - Throws typed `AppError` instances on network failure or non-2xx responses.
+ * - On 401 (token expired / invalid), clears the session and redirects to Login.
  *
  * Usage:
  *   const data = await authFetch<MyResponseType>('/api/some/endpoint');
@@ -44,10 +61,15 @@ export async function authFetch<T>(
       },
     });
   } catch (networkErr) {
+    // Network error (connection refused, offline, CORS, etc.)
+    // Do NOT force-logout here — the server may just be temporarily unreachable.
     throw new AppError(AppErrorCode.NETWORK_ERROR);
   }
 
   if (response.status === 401) {
+    // Token expired or invalid — clear session immediately.
+    // RootNavigator will re-render and show the Login screen automatically.
+    forceLogout();
     throw new AppError(AppErrorCode.SESSION_EXPIRED);
   }
 
@@ -64,7 +86,7 @@ export async function authFetch<T>(
     } catch {
       // ignore JSON parse failure
     }
-    alert(responseBody.detail)
+    alert(responseBody?.detail);
     throw new AppError(AppErrorCode.SERVER_ERROR, serverMessage);
   }
 

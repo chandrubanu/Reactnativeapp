@@ -20,7 +20,7 @@ export interface IAdminDashboardRepository {
   getShiftById(shiftId: string): Promise<ShiftTemplate | null>;
   getAllRecentActivities(todayDate: string): Promise<RecentActivities[]>;
   /** Download attendance CSV for the given office + date. Triggers a browser file download. */
-  exportAttendanceCsv(officeId: string, date: string, search?: string): Promise<void>;
+  exportAttendanceCsv(officeId: string, date: string, month: number, year: number, search?: string): Promise<void>;
   /** Assign an employee to an office — POST /api/admin/employees/:employeeId/office */
   assignOffice(employeeId: string, officeId: number): Promise<void>;
   /** Fetch all offices (no role guard needed for dropdown population) */
@@ -160,20 +160,14 @@ class MockAdminDashboardRepository implements IAdminDashboardRepository {
     return response;
   }
 
-  async exportAttendanceCsv(officeId: string, date: string, search?: string): Promise<void> {
+  async exportAttendanceCsv(officeId: string, date: string, month: number, year: number, search?: string): Promise<void> {
     const token = useSessionStore.getState().token;
-    const { todayMonth, todayYear } = useMemo(() => {
-      const today = new Date();
-      return {
-        todayMonth: today.getMonth() + 1,
-        todayYear: today.getFullYear(),
-      };
-    }, []);
     // Build query string with required params
     const params = new URLSearchParams({ officeId, date });
-    const monthyear = (todayYear + '-' + todayMonth).toString();
+    const monthyear = (year + '-' + month).toString();
     if (search?.trim()) params.set('search', search.trim());
-
+    // Must use raw fetch — authFetch always sends Accept: application/json
+    // which causes the server to return 406 Not Acceptable for CSV endpoints.
     const { BASE_URL: baseUrl } = await import('@/api/apiClient');
     const response = await fetch(`${baseUrl}/api/admin/reports/attendance.xlsx?month=` + monthyear, {
       method: 'GET',
@@ -197,6 +191,7 @@ class MockAdminDashboardRepository implements IAdminDashboardRepository {
     anchor.click();
     document.body.removeChild(anchor);
     URL.revokeObjectURL(url);
+
   }
 
   async getAllOffices(): Promise<CenterSettings[]> {
