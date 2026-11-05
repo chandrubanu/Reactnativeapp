@@ -301,7 +301,6 @@ export default function LoginScreen() {
                     className="rounded-lg border border-white/20 bg-white/10 px-4 py-4 text-base text-white"
                     placeholder="Employee Code"
                     placeholderTextColor="rgba(255,255,255,0.55)"
-                    autoCapitalize="characters"
                     autoCorrect={false}
                     value={value}
                     onChangeText={onChange}
