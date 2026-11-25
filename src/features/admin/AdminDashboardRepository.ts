@@ -164,7 +164,7 @@ class MockAdminDashboardRepository implements IAdminDashboardRepository {
     const token = useSessionStore.getState().token;
     // Build query string with required params
     const params = new URLSearchParams({ officeId, date });
-    const monthyear = (year + '-' + month).toString();
+    const monthyear = `${year}-${String(month).padStart(2, '0')}`;
     if (search?.trim()) params.set('search', search.trim());
     // Must use raw fetch — authFetch always sends Accept: application/json
     // which causes the server to return 406 Not Acceptable for CSV endpoints.
