@@ -8,6 +8,7 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useToastStore, ToastItem, ToastType } from '../../store/toastStore';
 import { colors, radii, spacing } from '../../constants/theme';
 
@@ -102,10 +103,11 @@ function ToastCard({ item }: { item: ToastItem }) {
 // ─── Toast container — mount once in AdminShell ────────────────────────────────
 export function Toast() {
   const toasts = useToastStore((s) => s.toasts);
+  const insets = useSafeAreaInsets();
   if (toasts.length === 0) return null;
 
   return (
-    <View style={styles.container} pointerEvents="box-none">
+    <View style={[styles.container, { top: Math.max(insets.top, 12) + 8 }]} pointerEvents="box-none">
       {toasts.map((t) => (
         <ToastCard key={t.id} item={t} />
       ))}
@@ -119,13 +121,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 16,
     right: 16,
+    left: 16,
     zIndex: 9999,
+    elevation: 9999,
     gap: 10,
-    // On mobile keep it narrower
-    maxWidth: 360,
-    minWidth: 260,
     // Web: align to top-right
-    ...(Platform.OS === 'web' ? { alignItems: 'flex-end' } : {}),
+    ...(Platform.OS === 'web' ? { left: undefined, maxWidth: 360, minWidth: 260, alignItems: 'flex-end' } : {}),
   },
   card: {
     flexDirection: 'row',
@@ -137,15 +138,15 @@ const styles = StyleSheet.create({
     // Shadow — web
     ...(Platform.OS === 'web'
       ? ({
-          boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-        } as any)
+        boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+      } as any)
       : {
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.12,
-          shadowRadius: 8,
-          elevation: 6,
-        }),
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.12,
+        shadowRadius: 8,
+        elevation: 6,
+      }),
   },
   icon: {
     marginTop: 1,

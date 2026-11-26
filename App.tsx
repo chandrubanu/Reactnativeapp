@@ -7,6 +7,7 @@ import { queryClient } from './src/api/queryClient';
 import "./global.css"
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { Toast } from '@/components/ui/Toast';
 /**
  * App.tsx is the composition root: every top-level Provider (React
  * Navigation's safe-area context, TanStack Query's cache provider) wraps
@@ -27,6 +28,7 @@ export default function App() {
       <QueryClientProvider client={queryClient}>
         <StatusBar style="dark" />
         <RootNavigator />
+        <Toast />
       </QueryClientProvider>
     </SafeAreaProvider>
   );

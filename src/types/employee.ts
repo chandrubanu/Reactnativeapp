@@ -14,5 +14,5 @@ export interface Employee {
   avatarUrl?: string;
   /** Full office/geofence data returned by /api/employees/me — no extra API call needed. */
   office?: OfficeLocation;
-  isNew: boolean;
+  //isNew: boolean;
 }

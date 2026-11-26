@@ -1,6 +1,7 @@
 import { BASE_URL } from '../config/env';
 import { useSessionStore } from '../store/sessionStore';
 import { AppError, AppErrorCode } from '../constants/errors';
+import { toast } from '../utils/toast';
 
 // BASE_URL is resolved from EXPO_PUBLIC_API_BASE_URL env variable.
 // Configure it in .env.local (dev) or .env.production (prod).
@@ -19,7 +20,7 @@ function forceLogout() {
   // Also wipe the persisted token so the next app boot doesn't restore it.
   // Imported lazily to avoid circular deps.
   import('../storage/secureStorage').then(({ secureStorage }) => {
-    secureStorage.clear().catch(() => {});
+    secureStorage.clear().catch(() => { });
   });
 }
 
@@ -86,7 +87,10 @@ export async function authFetch<T>(
     } catch {
       // ignore JSON parse failure
     }
-    alert(responseBody?.detail);
+    // Show server detail as a toast (non-blocking) instead of a native alert dialog
+    if (responseBody?.detail) {
+      toast.info('Info', responseBody.detail);
+    }
     throw new AppError(AppErrorCode.SERVER_ERROR, serverMessage);
   }
 
